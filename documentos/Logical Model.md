@@ -79,6 +79,8 @@ compra (
 
 ### Modelo Lógico Relacional - Traqtomac
 
+#### Link dbdiagram: [https://dbdiagram.io/d/Traqtomac-6862e705f413ba350896d9cf]
+
 ```
 Project project_name {
   database_type: 'PostgreSQL'
@@ -87,13 +89,12 @@ Project project_name {
 
 Table pessoa {
     id_pessoa integer [pk, increment]
-    tipo integer [not null, note:'0 - fisica\n1 - juridica']
+    tipo integer [not null, note:'0-Fisica\n1-Juridica']
     nome varchar(50) [not null]
     ender varchar(100) [not null]
     cpf varchar(11) [unique]
     cnpj varchar(14) [unique]
-    razaosocial varchar 
-    created_at timestamp
+    razaosocial varchar(20)
 }
 
 Table ordem_servico {
@@ -102,7 +103,6 @@ Table ordem_servico {
     local varchar(100) [not null]
     descricao text [not null]
     id_pessoa integer [not null]    // Registra (1:N)
-    created_at timestamp
 }
 Ref: ordem_servico.id_pessoa > pessoa.id_pessoa
 
@@ -113,7 +113,6 @@ Table servico {
     descricao text [not null]
     id_os integer [not null]        // Execução (1:N)
     id_cobranca integer [not null]  // Gera (1:N)
-    created_at timestamp
 }
 Ref: servico.id_os > ordem_servico.id_os
 Ref: servico.id_cobranca > cobranca.id_cobranca
@@ -123,7 +122,7 @@ Table cobranca {
     dt_emissao date [not null]
     dt_validade date [not null]
     dt_final date [not null]
-    status_pag integer [not null, note:'0-aguardando\n1-pago']
+    status_pag integer [not null, note:'0-Pendente\n1-Pago\n2-Cancelado']
     valor_final decimal(10,2) [not null]
     descontos decimal(10,2) [not null]
 }
@@ -132,7 +131,7 @@ Table produto {
     id_produto integer [pk, increment]
     nome varchar(50) [not null]
     quantidade integer [not null]
-    condicao integer [not null, note:'0-pessimo\n1-mediano\n2-excelente']
+    condicao integer [not null, note:'0-Pessimo\n1-Mediano\n2-Excelente']
     valor decimal(10,2) [not null]
     descricao text [not null]
     categoria varchar(20) [not null]
@@ -173,5 +172,3 @@ Table compra {
 }
 Ref: compra.id_pessoa > pessoa.id_pessoa
 ```
-
-[https://dbdiagram.io/d/Traqtomac-6862e705f413ba350896d9cf]
