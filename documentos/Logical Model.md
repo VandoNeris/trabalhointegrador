@@ -89,12 +89,12 @@ Project project_name {
 
 Table pessoa {
     id_pessoa integer [pk, increment]
-    tipo integer [not null, note:'0-Fisica\n1-Juridica']
-    nome varchar(50) [not null]
+    tipo boolean [not null, note:'0-Fisica\n1-Juridica']
+    nome varchar(60) [not null]
     ender varchar(100) [not null]
     cpf varchar(11) [unique]
     cnpj varchar(14) [unique]
-    razaosocial varchar(20)
+    razaosocial varchar(60)
 }
 
 Table ordem_servico {
@@ -104,18 +104,18 @@ Table ordem_servico {
     descricao text [not null]
     id_pessoa integer [not null]    // Registra (1:N)
 }
-Ref: ordem_servico.id_pessoa > pessoa.id_pessoa
+Ref registra: ordem_servico.id_pessoa > pessoa.id_pessoa
 
 Table servico {
     id_servico integer [pk, increment]
-    horas decimal(2,2) [not null]
-    quilometros decimal(10, 2) [not null]
+    horas numeric(4,2) [not null]
+    quilometros numeric(10, 2) [not null]
     descricao text [not null]
     id_os integer [not null]        // Execução (1:N)
     id_cobranca integer [not null]  // Gera (1:N)
 }
-Ref: servico.id_os > ordem_servico.id_os
-Ref: servico.id_cobranca > cobranca.id_cobranca
+Ref execução: servico.id_os > ordem_servico.id_os
+Ref gera: servico.id_cobranca > cobranca.id_cobranca
 
 Table cobranca {
     id_cobranca integer [pk, increment]
@@ -123,42 +123,42 @@ Table cobranca {
     dt_validade date [not null]
     dt_final date [not null]
     status_pag integer [not null, note:'0-Pendente\n1-Pago\n2-Cancelado']
-    valor_final decimal(10,2) [not null]
-    descontos decimal(10,2) [not null]
+    valor_final numeric(12,2) [not null]
+    descontos numeric(12,2) [not null]
 }
 
 Table produto {
     id_produto integer [pk, increment]
-    nome varchar(50) [not null]
+    nome varchar(60) [not null]
     quantidade integer [not null]
     condicao integer [not null, note:'0-Pessimo\n1-Mediano\n2-Excelente']
-    valor decimal(10,2) [not null]
+    valor numeric(12,2) [not null]
     descricao text [not null]
-    categoria varchar(20) [not null]
-    marca varchar(20) [not null]
+    categoria varchar(60) [not null]
+    marca varchar(60) [not null]
     id_servico integer [not null]   // Consome (1:N)
 }
-Ref: produto.id_servico > servico.id_servico
+Ref consome: produto.id_servico > servico.id_servico
 
 Table funcionamento {               // Funcionamento (N:N)
     id_funcionamento integer [pk, increment]
     id_produto integer [not null]
     id_maquina integer [not null]
 }
-Ref: funcionamento.id_produto <> produto.id_produto
-Ref: funcionamento.id_maquina <> maquina.id_maquina
+Ref funcionamento: funcionamento.id_produto <> produto.id_produto
+Ref funcionamento: funcionamento.id_maquina <> maquina.id_maquina
 
 Table consumocompra {               // Consome (N:N)
     id_consumoc integer [pk, increment]
     id_produto integer [not null]
     id_compra integer [not null]
 }
-Ref: consumocompra.id_produto <> produto.id_produto
-Ref: consumocompra.id_compra <> compra.id_compra
+Ref consome: consumocompra.id_produto <> produto.id_produto
+Ref consome: consumocompra.id_compra <> compra.id_compra
 
 Table maquina {
     id_maquina integer [pk, increment]
-    nome varchar(50) [not null]
+    nome varchar(60) [not null]
     descricao text [not null]
 }
 
@@ -170,5 +170,5 @@ Table compra {
     loc_entrega varchar(100) [not null]
     id_pessoa integer [not null]   // Registra (1:N)
 }
-Ref: compra.id_pessoa > pessoa.id_pessoa
+Ref registra: compra.id_pessoa > pessoa.id_pessoa
 ```
