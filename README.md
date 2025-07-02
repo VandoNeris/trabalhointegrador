@@ -1,4 +1,4 @@
-### Projeto Integrador - Traqtomac
+### Projeto Integrador - Tractomaq
 ---
 
 ##### Projeto integrador das matérias de Banco de Dados I, Engenharia de Software I e Programação II. 

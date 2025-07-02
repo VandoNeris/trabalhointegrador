@@ -15,7 +15,7 @@ ordemserv (
     data,
     local,
     <u style="text-decoration: underline dashed;">descricao</u>,
-    codpessoa(pessoa)           <!-- Registra (1:N) -->
+    codpessoa(pessoa)           <!-- RegistraOS (1:N) -->
 )
 
 servico (
@@ -33,32 +33,36 @@ cobranca (
     dtvalidade,
     <u style="text-decoration: underline dashed;">dtfinal</u>,
     statuspag,
-    valorfinal,
-    descontos
+    valorfinal
 )
 
-produto (
+produtos (
     <u>codigo</u>,
     nome,
     quantidade,
     condicao,
     valor,
-    descricao,
+    <u style="text-decoration: underline dashed;">descricao</u>,
     categoria,
     marca
-    codservico(servico),        <!-- Consome (1:N) -->
 )
 
-funcionamento (                 <!-- Funcionamento (N:N) -->
+compatibilidade (                 <!-- Compatibilidade (N:N) -->
     <u>codigo</u>,
-    codproduto(produto),
-    codmaquina(maquina), 
+    codprodutos(produtos),
+    codmaquina(maquina)
 )
 
-consumo (                       <!-- Consome (N:N) -->
+consumocompra (                       <!-- ConsumoCompra (N:N) -->
     <u>codigo</u>,
-    codproduto(produto),
-    codcompra(compra),
+    codprodutos(produtos),
+    codcompra(compra)
+)
+
+consumoservico (                      <!-- ConsumoServico (N:N) -->
+    <u>codigo</u>,
+    codprodutos(produtos),
+    codservico(servico)
 )
 
 maquina (
@@ -73,18 +77,18 @@ compra (
     dtvalidade,
     <u style="text-decoration: underline dashed;">dtfinal</u>,
     locentrega,
-    codpessoa(pessoa)           <!-- Registra (1:N) -->
+    codpessoa(pessoa)           <!-- RegistraCompra (1:N) -->
 )
 
 
-### Modelo Lógico Relacional - Traqtomac
+### Modelo Lógico Relacional - Tractomaq
 
-#### Link dbdiagram: [https://dbdiagram.io/d/Traqtomac-6862e705f413ba350896d9cf]
+**Link dbdiagram: [https://dbdiagram.io/d/Tractomaq-6862e705f413ba350896d9cf]**
 
 ```
 Project project_name {
   database_type: 'PostgreSQL'
-  Note: 'Traqtomac'
+  Note: 'Tractomaq'
 }
 
 Table pessoa {
@@ -102,9 +106,9 @@ Table ordem_servico {
     dt_os date [not null]
     local varchar(100) [not null]
     descricao text
-    id_pessoa integer [not null]    // Registra (1:N)
+    id_pessoa integer [not null]    // RegistraOS (1:N)
 }
-Ref registra: ordem_servico.id_pessoa > pessoa.id_pessoa
+Ref registraordemservico: ordem_servico.id_pessoa > pessoa.id_pessoa
 
 Table servico {
     id_servico integer [pk, increment]
@@ -124,11 +128,10 @@ Table cobranca {
     dt_final date
     status_pag boolean [not null, note:'0-Pendente\n1-Pago']
     valor_final numeric(12,2) [not null]
-    descontos numeric(12,2) [not null]
 }
 
-Table produto {
-    id_produto integer [pk, increment]
+Table produtos {
+    id_produtos integer [pk, increment]
     nome varchar(60) [not null]
     quantidade integer [not null]
     condicao integer [not null, note:'0-Pessimo\n1-Mediano\n2-Excelente']
@@ -136,25 +139,32 @@ Table produto {
     descricao text
     categoria varchar(60) [not null]
     marca varchar(60) [not null]
-    id_servico integer [not null]   // Consome (1:N)
 }
-Ref consome: produto.id_servico > servico.id_servico
+Ref consumoservico: produtos.id_servico > servico.id_servico
 
-Table funcionamento {               // Funcionamento (N:N)
-    id_funcionamento integer [pk, increment]
-    id_produto integer [not null]
+Table compatibilidade {               // Compatibilidade (N:N)
+    id_compatibilidade integer [pk, increment]
+    id_produtos integer [not null]
     id_maquina integer [not null]
 }
-Ref funcionamento: funcionamento.id_produto <> produto.id_produto
-Ref funcionamento: funcionamento.id_maquina <> maquina.id_maquina
+Ref compatibilidade: compatibilidade.id_produtos <> produtos.id_produtos
+Ref compatibilidade: compatibilidade.id_maquina <> maquina.id_maquina
 
-Table consumocompra {               // Consome (N:N)
-    id_consumoc integer [pk, increment]
-    id_produto integer [not null]
+Table consumocompra {               // ConsumoCompra (N:N)
+    id_consumocompra integer [pk, increment]
+    id_produtos integer [not null]
     id_compra integer [not null]
 }
-Ref consome: consumocompra.id_produto <> produto.id_produto
-Ref consome: consumocompra.id_compra <> compra.id_compra
+Ref consumocompra: consumocompra.id_produtos <> produtos.id_produtos
+Ref consumocompra: consumocompra.id_compra <> compra.id_compra
+
+Table consumoservico {              // ConsumoServico (N:N)
+    id_consumoservico integer [pk, increment]
+    id_produtos integer [not null]
+    id_servico integer [not null]
+}
+Ref consumoservico: consumoservico.id_produtos <> produtos.id_produtos
+Ref consumoservico: consumoservico.id_servico <> compra.id_servico
 
 Table maquina {
     id_maquina integer [pk, increment]
@@ -168,7 +178,7 @@ Table compra {
     dt_validade date [not null]
     dt_final date
     loc_entrega varchar(100) [not null]
-    id_pessoa integer [not null]   // Registra (1:N)
+    id_pessoa integer [not null]   // RegistraCompra (1:N)
 }
-Ref registra: compra.id_pessoa > pessoa.id_pessoa
+Ref registracompra: compra.id_pessoa > pessoa.id_pessoa
 ```
