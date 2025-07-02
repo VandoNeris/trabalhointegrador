@@ -10,6 +10,30 @@ pessoa (
     <u style="text-decoration: underline dashed;">razaosocial</u>
 )
 
+cobranca (
+    <u>codigo</u>,
+    dtemissao,
+    dtvalidade,
+    <u style="text-decoration: underline dashed;">dtfinal</u>,
+    statuspag,
+    valorfinal
+)
+
+maquina (
+    <u>codigo</u>,
+    nome,
+    <u style="text-decoration: underline dashed;">descricao</u>
+)
+
+compra (
+    <u>codigo</u>,
+    dtemissao,
+    dtvalidade,
+    <u style="text-decoration: underline dashed;">dtfinal</u>,
+    locentrega,
+    codpessoa(pessoa)           <!-- RegistraCompra (1:N) -->
+)
+
 ordemserv (
     <u>codigo</u>,
     data,
@@ -25,15 +49,6 @@ servico (
     <u style="text-decoration: underline dashed;">descricao</u>,
     codordemserv(ordemserv),    <!-- Execução (1:N) -->
     codcobranca(cobranca)       <!-- Gera (1:N) -->
-)
-
-cobranca (
-    <u>codigo</u>,
-    dtemissao,
-    dtvalidade,
-    <u style="text-decoration: underline dashed;">dtfinal</u>,
-    statuspag,
-    valorfinal
 )
 
 produtos (
@@ -65,21 +80,6 @@ consumoservico (                <!-- ConsumoServico (N:N) -->
     codservico(servico)
 )
 
-maquina (
-    <u>codigo</u>,
-    nome,
-    <u style="text-decoration: underline dashed;">descricao</u>
-)
-
-compra (
-    <u>codigo</u>,
-    dtemissao,
-    dtvalidade,
-    <u style="text-decoration: underline dashed;">dtfinal</u>,
-    locentrega,
-    codpessoa(pessoa)           <!-- RegistraCompra (1:N) -->
-)
-
 
 ### Modelo Lógico Relacional - Tractomaq
 
@@ -101,6 +101,31 @@ Table pessoa {
     razaosocial varchar(60)
 }
 
+Table cobranca {
+    id_cobranca integer [pk, increment]
+    dt_emissao date [not null]
+    dt_validade date [not null]
+    dt_final date
+    status_pag smallint [not null]
+    valor_final numeric(12,2) [not null]
+}
+
+Table maquina {
+    id_maquina integer [pk, increment]
+    nome varchar(60) [not null]
+    descricao text
+}
+
+Table compra {
+    id_compra integer [pk, increment]
+    dt_emissao date [not null]
+    dt_validade date [not null]
+    dt_final date
+    loc_entrega varchar(100) [not null]
+    id_pessoa integer [not null]            // RegistraCompra (1:N)
+}
+Ref registracompra: compra.id_pessoa > pessoa.id_pessoa
+
 Table ordem_servico {
     id_os integer [pk, increment]
     dt_os date [not null]
@@ -120,15 +145,6 @@ Table servico {
 }
 Ref execução: servico.id_os > ordem_servico.id_os
 Ref gera: servico.id_cobranca > cobranca.id_cobranca
-
-Table cobranca {
-    id_cobranca integer [pk, increment]
-    dt_emissao date [not null]
-    dt_validade date [not null]
-    dt_final date
-    status_pag smallint [not null]
-    valor_final numeric(12,2) [not null]
-}
 
 Table produtos {
     id_produto integer [pk, increment]
@@ -164,20 +180,4 @@ Table consumoservico {                      // ConsumoServico (N:N)
 }
 Ref consumoservico: consumoservico.id_produto <> produtos.id_produto
 Ref consumoservico: consumoservico.id_servico <> servico.id_servico
-
-Table maquina {
-    id_maquina integer [pk, increment]
-    nome varchar(60) [not null]
-    descricao text
-}
-
-Table compra {
-    id_compra integer [pk, increment]
-    dt_emissao date [not null]
-    dt_validade date [not null]
-    dt_final date
-    loc_entrega varchar(100) [not null]
-    id_pessoa integer [not null]            // RegistraCompra (1:N)
-}
-Ref registracompra: compra.id_pessoa > pessoa.id_pessoa
 ```
