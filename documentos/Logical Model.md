@@ -14,7 +14,7 @@ ordemserv (
     <u>codigo</u>,
     data,
     local,
-    descricao,
+    <u style="text-decoration: underline dashed;">descricao</u>,
     codpessoa(pessoa)           <!-- Registra (1:N) -->
 )
 
@@ -22,7 +22,7 @@ servico (
     <u>codigo</u>,
     horas,
     quilometros,
-    descricao,
+    <u style="text-decoration: underline dashed;">descricao</u>,
     codordemserv(ordemserv),    <!-- Execução (1:N) -->
     codcobranca(cobranca)       <!-- Gera (1:N) -->
 )
@@ -31,7 +31,7 @@ cobranca (
     <u>codigo</u>,
     dtemissao,
     dtvalidade,
-    dtfinal,
+    <u style="text-decoration: underline dashed;">dtfinal</u>,
     statuspag,
     valorfinal,
     descontos
@@ -64,14 +64,14 @@ consumo (                       <!-- Consome (N:N) -->
 maquina (
     <u>codigo</u>,
     nome,
-    descricao
+    <u style="text-decoration: underline dashed;">descricao</u>
 )
 
 compra (
     <u>codigo</u>,
     dtemissao,
     dtvalidade,
-    dtfinal,
+    <u style="text-decoration: underline dashed;">dtfinal</u>,
     locentrega,
     codpessoa(pessoa)           <!-- Registra (1:N) -->
 )
@@ -101,7 +101,7 @@ Table ordem_servico {
     id_os integer [pk, increment]
     dt_os date [not null]
     local varchar(100) [not null]
-    descricao text [not null]
+    descricao text
     id_pessoa integer [not null]    // Registra (1:N)
 }
 Ref registra: ordem_servico.id_pessoa > pessoa.id_pessoa
@@ -109,8 +109,8 @@ Ref registra: ordem_servico.id_pessoa > pessoa.id_pessoa
 Table servico {
     id_servico integer [pk, increment]
     horas numeric(4,2) [not null]
-    quilometros numeric(10, 2) [not null]
-    descricao text [not null]
+    quilometros numeric(6, 2) [not null]
+    descricao text
     id_os integer [not null]        // Execução (1:N)
     id_cobranca integer [not null]  // Gera (1:N)
 }
@@ -121,8 +121,8 @@ Table cobranca {
     id_cobranca integer [pk, increment]
     dt_emissao date [not null]
     dt_validade date [not null]
-    dt_final date [not null]
-    status_pag integer [not null, note:'0-Pendente\n1-Pago\n2-Cancelado']
+    dt_final date
+    status_pag boolean [not null, note:'0-Pendente\n1-Pago']
     valor_final numeric(12,2) [not null]
     descontos numeric(12,2) [not null]
 }
@@ -133,7 +133,7 @@ Table produto {
     quantidade integer [not null]
     condicao integer [not null, note:'0-Pessimo\n1-Mediano\n2-Excelente']
     valor numeric(12,2) [not null]
-    descricao text [not null]
+    descricao text
     categoria varchar(60) [not null]
     marca varchar(60) [not null]
     id_servico integer [not null]   // Consome (1:N)
@@ -159,14 +159,14 @@ Ref consome: consumocompra.id_compra <> compra.id_compra
 Table maquina {
     id_maquina integer [pk, increment]
     nome varchar(60) [not null]
-    descricao text [not null]
+    descricao text
 }
 
 Table compra {
     id_compra integer [pk, increment]
     dt_emissao date [not null]
     dt_validade date [not null]
-    dt_final date [not null]
+    dt_final date
     loc_entrega varchar(100) [not null]
     id_pessoa integer [not null]   // Registra (1:N)
 }
