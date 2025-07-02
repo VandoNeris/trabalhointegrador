@@ -140,7 +140,6 @@ Table produtos {
     categoria varchar(60) [not null]
     marca varchar(60) [not null]
 }
-Ref consumoservico: produtos.id_servico > servico.id_servico
 
 Table compatibilidade {               // Compatibilidade (N:N)
     id_compatibilidade integer [pk, increment]
@@ -164,7 +163,7 @@ Table consumoservico {              // ConsumoServico (N:N)
     id_servico integer [not null]
 }
 Ref consumoservico: consumoservico.id_produtos <> produtos.id_produtos
-Ref consumoservico: consumoservico.id_servico <> compra.id_servico
+Ref consumoservico: consumoservico.id_servico <> servico.id_servico
 
 Table maquina {
     id_maquina integer [pk, increment]
