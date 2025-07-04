@@ -11,3 +11,10 @@ O objetivo da atividade é educacional, portanto o sistema será projetado acomp
 ![Imagem do diagrama do modelo lógico do projeto](/documentos/Logical%20Model.png "Modelo lógico - Tractomaq")
 
 **Instruções:** os arquivos referentes à prototipação podem ser econtrados na pasta "documentos".
+
+#### Para rodar:
+python -m venv venv
+
+venv\Scripts\activate
+
+fastapi dev main.py
