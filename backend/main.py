@@ -36,6 +36,16 @@ class ClienteIn(BaseModel):
 class Cliente(ClienteIn):
     id: int
 
+class Maquina(BaseModel):
+    id: int
+    desc: str
+
+class Servico(BaseModel):
+    id: int
+    desc: str
+    horas: int
+    quilometros: int
+
 @app.get("/clientes", response_model=List[Cliente])
 def listar_clientes():
     conn = sqlite3.connect(DB_PATH)
@@ -63,3 +73,34 @@ def remover_cliente(cliente_id: int):
     conn.commit()
     conn.close()
     return {"ok": True}
+
+@app.get("/maquinas", response_model=List[Maquina])
+def listar_maquinas():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT id, nome FROM maquina ORDER BY id DESC")
+    maquinas = [Maquina(id=row[0], nome=row[1]) for row in c.fetchall()]
+    conn.close()
+    return maquinas
+
+@app.post("/maquinas", response_model=Maquina)
+def criar_maquina():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("INSERT INTO maquina (nome, desc) VALUES (?, ?)", ("Nova Máquina",))
+    conn.commit()
+    new_id = c.lastrowid
+    conn.close()
+    return Maquina(id=new_id, nome="Nova Máquina")
+
+@app.delete("/maquinas/{maquina_id}")
+def remover_maquina(maquina_id: int):
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("DELETE FROM maquina WHERE id=?", (maquina_id,))
+    conn.commit()
+    conn.close()
+    return {"ok": True}
+
+
+
