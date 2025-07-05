@@ -103,4 +103,35 @@ def remover_maquina(maquina_id: int):
     return {"ok": True}
 
 
+@app.get("/servicos", response_model=List[Servico])
+def listar_servicos():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT id, desc, horas, quilometros FROM servico ORDER BY id DESC")
+    servicos = [Servico(id=row[0], desc=row[1], horas=row[2], quilometros=row[3]) for row in c.fetchall()]
+    conn.close()
+    return servicos
+
+@app.post("/servicos", response_model=Servico) 
+def criar_servico(servico: Servico):
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("INSERT INTO servico (desc, horas, quilometros) VALUES (?, ?, ?)",
+              (servico.desc, servico.horas, servico.quilometros))
+    conn.commit()
+    new_id = c.lastrowid
+    conn.close()
+    return Servico(id=new_id, desc=servico.desc, horas=servico.horas, quilometros=servico.quilometros)
+
+@app.delete("/servicos/{servico_id}")
+def remover_servico(servico_id: int):
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("DELETE FROM servico WHERE id=?", (servico_id,))
+    conn.commit()
+    conn.close()
+    return {"ok": True}
+
+
+
 
