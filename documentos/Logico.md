@@ -1,7 +1,13 @@
-### Conversão Lógico - Conceitual
+### Conversão Lógico/Conceitual
+
+usuario (
+    <u>codusuario</u>,
+    senha,
+    tipo
+)
 
 pessoa (
-    <u>codigo</u>, 
+    <u>codpessoa</u>, 
     tipo, 
     nome, 
     endereco, 
@@ -12,25 +18,25 @@ pessoa (
 )
 
 cobranca (
-    <u>codigo</u>,
+    <u>codcobranca</u>,
     dtemissao,
-    dtvalidade,
-    <u style="text-decoration: underline dashed;">dtfinal</u>,
+    dtvencimento,
+    <u style="text-decoration: underline dashed;">dtpagamento</u>,
     statuspag,
     valor
 )
 
 maquina (
-    <u>codigo</u>,
+    <u>codmaquina</u>,
     nome,
     <u style="text-decoration: underline dashed;">descricao</u>
 )
 
 compra (
-    <u>codigo</u>,
+    <u>codcompra</u>,
     dtemissao,
-    dtvalidade,
-    <u style="text-decoration: underline dashed;">dtfinal</u>,
+    dtvencimento,
+    <u style="text-decoration: underline dashed;">dtpagamento</u>,
     locentrega,
     statuspag,
     valor,
@@ -38,7 +44,7 @@ compra (
 )
 
 ordemserv (
-    <u>codigo</u>,
+    <u>codos</u>,
     data,
     local,
     <u style="text-decoration: underline dashed;">descricao</u>,
@@ -46,7 +52,7 @@ ordemserv (
 )
 
 servico (
-    <u>codigo</u>,
+    <u>codservico</u>,
     horas,
     quilometros,
     <u style="text-decoration: underline dashed;">descricao</u>,
@@ -55,7 +61,7 @@ servico (
 )
 
 produtos (
-    <u>codigo</u>,
+    <u>codproduto</u>,
     nome,
     quantidade,
     valor,
@@ -65,34 +71,37 @@ produtos (
 )
 
 compatibilidade (                                                           <!-- Compatibilidade (N:N) -->
-    <u>codigo</u>,
+    <u>codcompatibilidade</u>,
     codproduto(produtos),
     codmaquina(maquina)
 )
 
 consumocompra (                                                             <!-- ConsumoCompra (N:N) -->
-    <u>codigo</u>,
-    quantidade
+    <u>codconsumocompra</u>,
+    quantidade,
     codproduto(produtos),
     codcompra(compra)
 )
 
 consumoservico (                                                            <!-- ConsumoServico (N:N) -->
-    <u>codigo</u>,
-    quantidade
+    <u>codconsumoservico</u>,
+    quantidade,
     codproduto(produtos),
     codservico(servico)
 )
 
-
-### Modelo Lógico Relacional - Tractomaq
-
-**Link dbdiagram: [https://dbdiagram.io/d/Tractomaq-6862e705f413ba350896d9cf]**
+### [Modelo Lógico Relacional - Tractomaq](https://dbdiagram.io/d/Tractomaq-6862e705f413ba350896d9cf)
 
 ```
 Project project_name {
   database_type: 'PostgreSQL'
   Note: 'Tractomaq'
+}
+
+Table usuario {
+    id_usuario varchar(60) [pk]
+    senha varchar(60) [not null]
+    tipo boolean [not null]
 }
 
 Table pessoa {
@@ -109,9 +118,9 @@ Table pessoa {
 Table cobranca {
     id_cobranca integer [pk, increment]
     dt_emissao date [not null]
-    dt_validade date [not null]
-    dt_final date
-    status_pag smallint [not null]
+    dt_vencimento date [not null]
+    dt_pagamento date
+    statuspag smallint [not null]
     valor numeric(12,2) [not null]
 }
 
@@ -124,8 +133,8 @@ Table maquina {
 Table compra {
     id_compra integer [pk, increment]
     dt_emissao date [not null]
-    dt_validade date [not null]
-    dt_final date
+    dt_vencimento date [not null]
+    dt_pagamento date
     loc_entrega varchar(100) [not null]
     statuspag smallint [not null]
     valor numeric(12,2) [not null]
@@ -134,8 +143,8 @@ Table compra {
 Ref registracompra: compra.id_pessoa > pessoa.id_pessoa
 
 Table ordem_servico {
-    id_os integer [pk, increment]
-    dt_os date [not null]
+    id_ordem_servico integer [pk, increment]
+    dt_ordem_servico date [not null]
     local varchar(100) [not null]
     descricao text
     id_pessoa integer [not null]            // AtribuicaoServico (1:N)
@@ -144,13 +153,13 @@ Ref registraordemservico: ordem_servico.id_pessoa > pessoa.id_pessoa
 
 Table servico {
     id_servico integer [pk, increment]
-    horas numeric(4,2) [not null]
+    horas numeric(5,2) [not null]
     quilometros numeric(6, 2) [not null]
     descricao text
-    id_os integer [not null]                // Execução (1:N)
+    id_ordem_servico integer [not null]                // Execução (1:N)
     id_cobranca integer                     // Gera (1:N)
 }
-Ref execução: servico.id_os > ordem_servico.id_os
+Ref execução: servico.id_ordem_servico > ordem_servico.id_ordem_servico
 Ref gera: servico.id_cobranca > cobranca.id_cobranca
 
 Table produtos {
