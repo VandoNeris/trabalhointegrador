@@ -154,7 +154,3 @@ def remover_servico(servico_id: int):
     conn.commit()
     conn.close()
     return {"ok": True}
-
-
-
-

@@ -17,10 +17,7 @@ backend/*.py[cod]
 *.py[cod]
 *.pyo
 
-# Banco de dados local (se for para testes apenas)
-backend/clientes2.db
-
-# Virtualenv (caso use)
+# Virtualenv
 venv/
 .env/
 
