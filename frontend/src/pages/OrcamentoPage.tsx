@@ -5,16 +5,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X, Plus } from "lucide-react";
 import { useState } from "react";
-import { useClientes } from "@/hooks/useClientes";
+import { usePessoas } from "@/hooks/usePessoas";
 
 const tiposServico = ["Instalação", "Manutenção"];
 const maquinas = ["D51", "Retroescavadeira"];
 const pecas = ["Motor", "Parafusos X50"];
 
 export default function OrcamentoPage() {
-  const { data: clientes, isLoading: clientesLoading, addCliente } = useClientes();
-  const [novoCliente, setNovoCliente] = useState("");
-  const [clienteSelecionado, setClienteSelecionado] = useState<string | undefined>(undefined);
+  const { data: pessoa, isLoading: pessoaLoading, addPessoa } = usePessoas();
+  const [novoPessoa, setNovoPessoa] = useState("");
+  const [pessoaSelecionado, setPessoaSelecionado] = useState<string | undefined>(undefined);
   const [maquinasSelecionadas, setMaquinasSelecionadas] = useState<string[]>(["D51", "Retroescavadeira"]);
   const [pecasSelecionadas, setPecasSelecionadas] = useState<string[]>(["Motor", "Parafusos X50"]);
 
@@ -26,38 +26,38 @@ export default function OrcamentoPage() {
         {/* Form Container */}
         <form className="mt-6 bg-[#dddddd] rounded-2xl shadow-md pb-6 px-2 pt-5 space-y-2">
           <div className="flex flex-wrap md:space-x-8 gap-6 justify-between rounded-lg py-2 px-2 bg-[#bdbdbd]">
-            {/* Left - Cliente e Serviço */}
+            {/* Left - Pessoa e Serviço */}
             <div className="flex-1 min-w-[220px] space-y-3">
               <div className="space-y-1">
-                <div className="text-xs font-semibold">CLIENTE</div>
-                <Select onValueChange={setClienteSelecionado}>
+                <div className="text-xs font-semibold">PESSOA</div>
+                <Select onValueChange={setPessoaSelecionado}>
                   <SelectTrigger className="bg-white">
-                    <SelectValue placeholder="Selecione um cliente" />
+                    <SelectValue placeholder="Selecione um pessoa" />
                   </SelectTrigger>
                   <SelectContent>
-                    {!clientesLoading && clientes && clientes.length === 0 && (
-                      <div className="px-2 py-1 text-muted-foreground text-xs">Nenhum cliente</div>
+                    {!pessoaLoading && pessoa && pessoa.length === 0 && (
+                      <div className="px-2 py-1 text-muted-foreground text-xs">Nenhum pessoa</div>
                     )}
-                    {!clientesLoading && clientes && clientes.map((c: any) => (
+                    {!pessoaLoading && pessoa && pessoa.map((c: any) => (
                       <SelectItem key={c.id} value={c.nome}>{c.nome}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
                 <div className="flex mt-1 gap-2">
                   <Input
-                    placeholder="Nome do novo cliente"
-                    value={novoCliente}
-                    onChange={e => setNovoCliente(e.target.value)}
+                    placeholder="Nome do novo pessoa"
+                    value={novoPessoa}
+                    onChange={e => setNovoPessoa(e.target.value)}
                     className="bg-white"
                   />
                   <Button
                     type="button"
                     variant="secondary"
                     size="sm"
-                    disabled={!novoCliente.trim()}
+                    disabled={!novoPessoa.trim()}
                     onClick={async () => {
-                      await addCliente(novoCliente.trim());
-                      setNovoCliente("");
+                      await addPessoa(novoPessoa.trim());
+                      setNovoPessoa("");
                     }}
                   >
                     <Plus size={14} className="mr-1" />Adicionar

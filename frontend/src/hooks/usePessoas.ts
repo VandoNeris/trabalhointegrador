@@ -1,15 +1,15 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-const API_URL = "http://localhost:8000"; 
+const API_URL = "http://localhost:8080"; 
 
-export function useClientes() {
+export function usePessoas() {
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ["clientes"],
+    queryKey: ["pessoas"],
     queryFn: async () => {
-      const res = await fetch(`${API_URL}/clientes`);
+      const res = await fetch(`${API_URL}/pessoas`);
       const data = await res.json();
       return data;
     }
@@ -17,7 +17,7 @@ export function useClientes() {
 
   const addMutation = useMutation({
     mutationFn: async (nome: string) => {
-      const res = await fetch(`${API_URL}/clientes`, {
+      const res = await fetch(`${API_URL}/pessoas`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nome }),
@@ -26,25 +26,25 @@ export function useClientes() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["clientes"] });
+      queryClient.invalidateQueries({ queryKey: ["pessoas"] });
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      const res = await fetch(`${API_URL}/clientes/${id}`, { method: "DELETE" });
+      const res = await fetch(`${API_URL}/pessoas/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Erro ao remover");
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["clientes"] });
+      queryClient.invalidateQueries({ queryKey: ["pessoas"] });
     },
   });
 
   return {
     ...query,
-    addCliente: addMutation.mutateAsync,
-    removeCliente: deleteMutation.mutateAsync,
+    addPessoa: addMutation.mutateAsync,
+    removePessoa: deleteMutation.mutateAsync,
     isSaving: addMutation.isPending,
     isDeleting: deleteMutation.isPending,
   };
