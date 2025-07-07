@@ -12,7 +12,7 @@ frontend/dist/
 npm-debug.log*
 
 # Python
-backend/__pycache__/
+__pycache__
 backend/*.py[cod]
 *.py[cod]
 *.pyo
@@ -20,6 +20,7 @@ backend/*.py[cod]
 # Virtualenv
 venv/
 .env/
+.env
 
 # IDEs e editores
 .vscode/

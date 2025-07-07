@@ -35,20 +35,39 @@ O objetivo da atividade é educacional, portanto o sistema será projetado acomp
 ![Imagem do diagrama do modelo lógico do projeto](/documentos/Logico.png "Modelo lógico - Tractomaq")
 
 ### Instruções para rodar a aplicação
-Para inicialização da aplicação são necessários dois terminais:
 
-- Terminal 1 - Frontend (React)  
+1. Faça uma cópia de `\backend\.env.example` e renomeie para `\backend\.env` adicionando os valores para as variáveis de ambiente de acordo com seu banco.
+
+2. Terminal - Banco de Dados (PostgreSQL)
+```
+cd scripts
+psql -U postgres -f create_tractomaq.sql
+psql -U postgres -f insert_tractomaq.sql
+psql -U postgres -f select_tractomaq.sql
+```  
+
+3. Terminal - Backend (FastAPI)  
+
+Para Windows:
+```
+cd backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+fastapi dev app\main.py
+```
+Para MacOS/Linux:
+```
+cd backend
+python3 -m venv venv
+source venv/Scripts/activate
+pip install -r requirements.txt
+fastapi dev app/main.py
+```
+
+4. Terminal - Frontend (React)  
 ```
 cd frontend
 npm install
 npm run dev
-```
-
-- Terminal 2 - Backend (FastAPI)  
-```
-cd backend
-python -m venv venv
-venv/Scripts/activate
-pip install -r requirements.txt
-fastapi dev app/main.py
 ```
