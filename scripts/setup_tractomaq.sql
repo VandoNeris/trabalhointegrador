@@ -1,6 +1,5 @@
 DROP DATABASE tractomaq;
-CREATE DATABASE IF NOT EXISTS tractomaq;
-
+CREATE DATABASE tractomaq;
 \c tractomaq
 SET datestyle TO "ISO,YMD";
 

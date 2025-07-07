@@ -36,36 +36,39 @@ O objetivo da atividade é educacional, portanto o sistema será projetado acomp
 
 ### Instruções para rodar a aplicação
 
-1. Faça uma cópia de `\backend\.env.example` e renomeie para `\backend\.env` adicionando os valores para as variáveis de ambiente de acordo com seu banco.
+#### Configurando variáveis de ambiente
+Faça uma cópia do arquivo `\.env.example`, renomeie essa cópia para `\.env` e adicione os valores para as variáveis de ambiente de acordo com seu banco.
 
-2. Terminal - Banco de Dados (PostgreSQL)
+#### Executando script do Banco de Dados (PostgreSQL)
 ```
 cd scripts
-psql -U postgres -f create_tractomaq.sql
-psql -U postgres -f insert_tractomaq.sql
-psql -U postgres -f select_tractomaq.sql
+psql -U postgres -f setup_tractomaq.sql
+cd ..
 ```  
 
-3. Terminal - Backend (FastAPI)  
+#### Ativando ambiente virtual
 
 Para Windows:
 ```
-cd backend
 python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-fastapi dev app\main.py
-```
+.\venv\scripts\activate
+```  
 Para MacOS/Linux:
 ```
-cd backend
 python3 -m venv venv
-source venv/Scripts/activate
-pip install -r requirements.txt
-fastapi dev app/main.py
-```
+source venv/bin/activate
+```  
 
-4. Terminal - Frontend (React)  
+#### Rodando Aplicação
+
+1. Terminal - Backend (FastAPI)  
+```
+pip install -r requirements.txt
+cd backend
+fastapi dev main.py
+```  
+
+2. Terminal - Frontend (React)  
 ```
 cd frontend
 npm install

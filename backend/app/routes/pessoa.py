@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from database import get_db
-from schemas.pessoa import Pessoa, PessoaGet
-from crud import pessoa as pessoa_crud
+from backend.database import get_db
+from backend.app.schemas.pessoa import Pessoa, PessoaGet
+from backend.app.crud import pessoa as pessoa_crud
 from typing import List
 
 router = APIRouter()

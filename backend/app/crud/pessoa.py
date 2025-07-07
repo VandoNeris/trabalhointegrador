@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-from schemas.pessoa import Pessoa, PessoaGet
+from backend.app.schemas.pessoa import Pessoa, PessoaGet
 
 def listar_pessoas(db: Session):
     query = text("""
@@ -13,6 +13,15 @@ def listar_pessoas(db: Session):
     ) for row in result.all() ]
 
 def criar_pessoa(db: Session, pessoa: Pessoa):
+    valores = pessoa.dict()
+    query = text("""
+        INSERT INTO pessoa (tipo, nome, endereco, telefone, cpf, cnpj, razaosocial)
+        VALUES (:tipo, :nome, :endereco, :telefone, :cpf, :cnpj, :razaosocial)
+    """)
+    db.execute(query, valores)
+    db.commit()
+
+def remover_pessoa(db: Session, id_pessoa: int):
     valores = pessoa.dict()
     query = text("""
         INSERT INTO pessoa (tipo, nome, endereco, telefone, cpf, cnpj, razaosocial)
