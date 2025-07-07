@@ -12,4 +12,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(pessoa.router)
+app.include_router(pessoa.router, tags=["Pessoa"])
