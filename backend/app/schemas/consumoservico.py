@@ -1,10 +1,22 @@
-from pydantic import BaseModel, constr
-from typing import Optional
+from pydantic import BaseModel, model_validator, StringConstraints, IntConstraints, FloatConstraints, DateConstraints
+from typing import Optional, Annotated
 import datetime as dt
 
 class ConsumoServico(BaseModel):
-    quantidade: int
-    id_produto: int
-    id_servico: int
+    quantidade: Annotated[
+        int,
+        IntConstraints(gt=0)
+    ]
+    id_produto: Annotated[
+        int,
+        IntConstraints(gt=0)
+    ]
+    id_servico: Annotated[
+        int,
+        IntConstraints(gt=0)
+    ]
 class ConsumoServicoGet(ConsumoServico):
-    id_consumoservico: int
+    id_consumoservico: Annotated[
+        int,
+        IntConstraints(gt=0)
+    ]

@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, model_validator, StringConstraints, IntConstraints, FloatConstraints, DateConstraints
+from typing import Optional, Annotated
 import datetime as dt
 
 class MensagemResposta(BaseModel):

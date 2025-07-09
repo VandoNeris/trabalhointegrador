@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS pessoa (
   tipo BOOLEAN NOT NULL,
   nome VARCHAR(60) NOT NULL,
   endereco VARCHAR(100) NOT NULL,
+  email VARCHAR(60) NOT NULL,
   telefone VARCHAR(13) NOT NULL, 
   cpf VARCHAR(11),
   cnpj VARCHAR(14),

@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
 from backend.database import get_db
 from backend.app.schemas.pessoa import Pessoa, PessoaGet
 from backend.app.schemas.MensagemResposta import MensagemResposta
@@ -9,9 +8,8 @@ from typing import List
 
 router = APIRouter()
 
-# Instancias para controle do status de operação
-# http_exc = HTTPException(status_code=404, detail="Pessoa não encontrada")
-http_exc = HTTPException(status_code=404, detail="Recurso não encontrado")
+# Definindo excessão personalidada
+http_exc = HTTPException(status_code=404, detail="Pessoa não encontrada")
 
 @router.get("/pessoas", response_model=List[PessoaGet])
 def get_pessoas(db: Session = Depends(get_db)):

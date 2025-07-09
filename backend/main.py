@@ -15,13 +15,17 @@ app.add_middleware(
 )
 
 # Tratamento de exceções global
-@app.exception_handler(SQLAlchemyError)
-async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
-    return JSONResponse(status_code=500, content={"detail": "Erro no banco de dados"})
+# @app.exception_handler(SQLAlchemyError)
+# async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
+#     return JSONResponse(status_code=500, content={"detail": "Erro no banco de dados"})
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
     return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+
+@app.exception_handler(ValueError)
+async def value_error_exception_handler(request: Request, exc: ValueError):
+    return JSONResponse(status_code=400, content={"detail": str(exc)})
 
 ### Incluindo as rotas da aplicação
 app.include_router(pessoa.router, tags=["Pessoa"])

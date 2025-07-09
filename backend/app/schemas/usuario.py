@@ -1,10 +1,16 @@
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, model_validator, StringConstraints, IntConstraints, FloatConstraints, DateConstraints
+from typing import Optional, Annotated
 import datetime as dt
 
 class Usuario(BaseModel):
-    senha: str
+    senha: Annotated[
+        str,
+        StringConstraints(min_length=8, max_length=60)
+    ]
     tipo: bool
 
 class UsuarioGet(Usuario):
-    id_usuario: int
+    id_usuario: Annotated[
+        str,
+        StringConstraints(max_length=60)
+    ]
