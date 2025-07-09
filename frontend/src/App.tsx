@@ -5,11 +5,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppSidebar from "./components/AppSidebar";
-import OrcamentoPage from "./pages/OrcamentoPage";
+import CobrancaPage from "./pages/CobrancaPage";
 import AgendaPage from "./pages/AgendaPage";
 import EstoquePage from "./pages/EstoquePage";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import PessoaPage from "./pages/PessoaPage";
 
 const queryClient = new QueryClient();
 
@@ -29,10 +30,10 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route
-            path="/orcamento"
+            path="/cobranca"
             element={
               <AppLayout>
-                <OrcamentoPage />
+                <CobrancaPage />
               </AppLayout>
             }
           />
@@ -41,6 +42,14 @@ const App = () => (
             element={
               <AppLayout>
                 <AgendaPage />
+              </AppLayout>
+            }
+          />
+          <Route
+            path="/pessoa"
+            element={
+              <AppLayout>
+                <PessoaPage />
               </AppLayout>
             }
           />

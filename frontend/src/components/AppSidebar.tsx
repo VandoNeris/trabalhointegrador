@@ -5,8 +5,10 @@ import { Menu } from "lucide-react";
 
 //array com os itens e suas respectivas rotas
 const menuItems = [
-  { label: "Novo Orçamento", to: "/orcamento" },
+  { label: "Nova Cobrança", to: "/cobranca" },
   { label: "Agenda de Serviços", to: "/agenda" },
+  { label: "Pessoa", to: "/pessoa" },
+  { label: "Empresa", to: "/empresa" },
   { label: "Estoque", to: "/estoque" },
 ];
 //Função que gera a side bar

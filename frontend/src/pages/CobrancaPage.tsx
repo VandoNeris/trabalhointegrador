@@ -11,7 +11,7 @@ const tiposServico = ["Instalação", "Manutenção"];
 const maquinas = ["D51", "Retroescavadeira"];
 const pecas = ["Motor", "Parafusos X50"];
 
-export default function OrcamentoPage() {
+export default function CobrancaPage() {
   const { data: pessoa, isLoading: pessoaLoading, addPessoa } = usePessoas();
   const [novoPessoa, setNovoPessoa] = useState("");
   const [pessoaSelecionado, setPessoaSelecionado] = useState<string | undefined>(undefined);
@@ -21,7 +21,7 @@ export default function OrcamentoPage() {
   return (
     <div className="flex flex-col flex-1 px-1 py-4 md:px-8 md:py-10">
       <div className="max-w-2xl mx-auto w-full">
-        <h2 className="text-center text-2xl md:text-3xl font-bold mb-2">NOVO ORÇAMENTO</h2>
+        <h2 className="text-center text-2xl md:text-3xl font-bold mb-2">NOVA COBRANÇA</h2>
         <div className="h-3 w-full bg-[#891B14] rounded" />
         {/* Form Container */}
         <form className="mt-6 bg-[#dddddd] rounded-2xl shadow-md pb-6 px-2 pt-5 space-y-2">
@@ -29,14 +29,14 @@ export default function OrcamentoPage() {
             {/* Left - Pessoa e Serviço */}
             <div className="flex-1 min-w-[220px] space-y-3">
               <div className="space-y-1">
-                <div className="text-xs font-semibold">PESSOA</div>
+                <div className="text-xs font-semibold">CLIENTE</div>
                 <Select onValueChange={setPessoaSelecionado}>
                   <SelectTrigger className="bg-white">
-                    <SelectValue placeholder="Selecione um pessoa" />
+                    <SelectValue placeholder="Selecione uma pessoa" />
                   </SelectTrigger>
                   <SelectContent>
                     {!pessoaLoading && pessoa && pessoa.length === 0 && (
-                      <div className="px-2 py-1 text-muted-foreground text-xs">Nenhum pessoa</div>
+                      <div className="px-2 py-1 text-muted-foreground text-xs">Nenhuma pessoa</div>
                     )}
                     {!pessoaLoading && pessoa && pessoa.map((c: any) => (
                       <SelectItem key={c.id} value={c.nome}>{c.nome}</SelectItem>
@@ -45,7 +45,7 @@ export default function OrcamentoPage() {
                 </Select>
                 <div className="flex mt-1 gap-2">
                   <Input
-                    placeholder="Nome do novo pessoa"
+                    placeholder="Nome do novo cliente"
                     value={novoPessoa}
                     onChange={e => setNovoPessoa(e.target.value)}
                     className="bg-white"

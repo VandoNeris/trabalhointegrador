@@ -16,7 +16,7 @@ def listar_pessoas(db: Session) -> List[PessoaGet]:
     query = text("""
         SELECT
             id_pessoa, tipo, nome, endereco, email, telefone, cpf, cnpj, razaosocial
-        FROM pessoa
+        FROM pessoa WHERE tipo = false
     """)
     
     # Executando a query e salvando o resultado

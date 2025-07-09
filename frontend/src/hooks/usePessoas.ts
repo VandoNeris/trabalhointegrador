@@ -1,7 +1,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-const API_URL = "http://localhost:8080"; 
+const API_URL = "http://localhost:8000"; 
 
 export function usePessoas() {
   const queryClient = useQueryClient();
@@ -16,11 +16,13 @@ export function usePessoas() {
   });
 
   const addMutation = useMutation({
-    mutationFn: async (nome: string) => {
-      const res = await fetch(`${API_URL}/pessoas`, {
+    mutationFn: async (data:any) => {
+      console.log(JSON.stringify(data))
+      const res = await fetch(`${API_URL}/pessoa`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nome }),
+        body: JSON.stringify(data)
+        // body: JSON.stringify({ nome }),
       });
       if (!res.ok) throw new Error("Erro ao adicionar");
       return res.json();
