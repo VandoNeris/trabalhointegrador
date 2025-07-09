@@ -14,17 +14,18 @@ def listar_pessoas(db: Session) -> List[PessoaGet]:
     """
     query = text("""
         SELECT
-            id_pessoa, tipo, nome, endereco, telefone, cpf, cnpj, razaosocial
+            id_pessoa, tipo, nome, endereco, email, telefone, cpf, cnpj, razaosocial
         FROM pessoa
     """)
-
-    result = db.execute(query).all()
+        
+    result = db.execute(query).mappings().all()
     if result is None: return list()
+    
     return [
         PessoaGet(
-            id_pessoa=row[0], tipo=row[1], nome=row[2], endereco=row[3],
-            telefone=row[4], cpf=row[5], cnpj=row[6], razaosocial=row[7]
-        ) for row in result
+            id_pessoa=row["id_pessoa"], tipo=row["tipo"], nome=row["nome"], endereco=row["endereco"], email=row["email"], telefone=row["telefone"], cpf=row["cpf"], cnpj=row["cnpj"], razaosocial=row["razaosocial"]
+        ) 
+        for row in result
     ]
 
 def criar_pessoa(db: Session, pessoa: Pessoa) -> Optional[int]:
@@ -40,8 +41,8 @@ def criar_pessoa(db: Session, pessoa: Pessoa) -> Optional[int]:
     """
     param = pessoa.dict()
     query = text("""
-        INSERT INTO pessoa (tipo, nome, endereco, telefone, cpf, cnpj, razaosocial)
-        VALUES (:tipo, :nome, :endereco, :telefone, :cpf, :cnpj, :razaosocial)
+        INSERT INTO pessoa (tipo, nome, endereco, email, telefone, cpf, cnpj, razaosocial)
+        VALUES (:tipo, :nome, :endereco, :email, :telefone, :cpf, :cnpj, :razaosocial)
         RETURNING id_pessoa
     """)
 
@@ -70,13 +71,7 @@ def atualizar_pessoa(db: Session, pessoa: Pessoa, id_pessoa: int) -> Optional[in
     query = text("""
         UPDATE pessoa
         SET 
-            tipo = :tipo, 
-            nome = :nome, 
-            endereco = :endereco, 
-            telefone = :telefone,
-            cpf = :cpf, 
-            cnpj = :cnpj, 
-            razaosocial = :razaosocial
+            tipo=:tipo, nome=:nome, endereco=:endereco, email=:email, telefone=:telefone, cpf=:cpf, cnpj=:cnpj, razaosocial=:razaosocial
         WHERE id_pessoa = :id_pessoa
         RETURNING id_pessoa
     """)
@@ -100,13 +95,12 @@ def remover_pessoa(db: Session, id_pessoa: int) -> Optional[int]:
     Raises:
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
-    param = {"id_pessoa": id_pessoa}
     query = text("""
         DELETE FROM pessoa WHERE id_pessoa = :id_pessoa RETURNING id_pessoa
     """)
 
     try:
-        result = db.execute(query, param)
+        result = db.execute(query, {"id_pessoa": id_pessoa})
         db.commit()
         return result.scalar()
     except SQLAlchemyError as e:
@@ -122,18 +116,25 @@ def buscar_pessoa(db: Session, id_pessoa: int) -> Optional[PessoaGet]:
     Returns:
         Optional[PessoaGet]: Objeto contendo os dados da pessoa, ou None se não encontrada.
     """
-    param = {"id_pessoa": id_pessoa}
     query = text("""
         SELECT 
-            id_pessoa, tipo, nome, endereco, telefone, cpf, cnpj, razaosocial
+            id_pessoa, tipo, nome, endereco, email, telefone, cpf, cnpj, razaosocial
         FROM pessoa
         WHERE id_pessoa = :id_pessoa
         LIMIT 1
     """)
-
-    result = db.execute(query, param).fetchone()
+    
+    result = db.execute(query, {"id_pessoa": id_pessoa}).mappings().fetchone()
     if result is None: return None
+
     return PessoaGet(
-        id_pessoa=result[0], tipo=result[1], nome=result[2], endereco=result[3],
-        telefone=result[4], cpf=result[5], cnpj=result[6], razaosocial=result[7]
+        id_pessoa=result["id_pessoa"],
+        tipo=result["tipo"],
+        nome=result["nome"],
+        endereco=result["endereco"],
+        email=result["email"],
+        telefone=result["telefone"],
+        cpf=result["cpf"],
+        cnpj=result["cnpj"],
+        razaosocial=result["razaosocial"]
     )

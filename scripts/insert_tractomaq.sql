@@ -8,11 +8,11 @@ INSERT INTO usuario (id_usuario, senha, tipo) VALUES
 ('user2@example.com', 'user2pass', TRUE);
 
 -- Inserção de dados na tabela pessoa
-INSERT INTO pessoa (tipo, nome, endereco, telefone, cpf, cnpj, razaosocial) VALUES
-(FALSE, 'João Silva', 'Rua A, 123', '49912345678', '11122233344', NULL, NULL),
-(TRUE, 'ABC Máquinas Ltda.', 'Av. B, 456', '49987654321', NULL, '11222333000144', 'ABC Maquinas Peças e Serviços Ltda'),
-(FALSE, 'Maria Souza', 'Rua C, 789', '49998761234', '55566677788', NULL, NULL),
-(TRUE, 'Máquinas Pesadas SA', 'Rodovia D, km 10', '49911223344', NULL, '44555666000177', 'Maquinas Pesadas SA');
+INSERT INTO pessoa (tipo, nome, endereco, email, telefone, cpf, cnpj, razaosocial) VALUES
+(FALSE, 'João Silva', 'Rua A, 123', 'joao.silva@gmail.com', '49912345678', '11122233344', NULL, NULL),
+(TRUE, 'ABC Máquinas Ltda.', 'Av. B, 456', 'abcmaquinas@abc.com', '49987654321', NULL, '11222333000144', 'ABC Maquinas Peças e Serviços Ltda'),
+(FALSE, 'Maria Souza', 'Rua C, 789', 'mariasouza@hotmail.com', '49998761234', '55566677788', NULL, NULL),
+(TRUE, 'Máquinas Pesadas SA', 'Rodovia D, km 10', 'ma@gmail.com', '49911223344', NULL, '44555666000177', 'Maquinas Pesadas SA');
 
 -- Inserção de dados na tabela cobranca
 INSERT INTO cobranca (dt_emissao, dt_vencimento, dt_pagamento, status_pag, valor) VALUES

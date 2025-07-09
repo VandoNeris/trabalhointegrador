@@ -1,4 +1,4 @@
-from pydantic import BaseModel, model_validator, StringConstraints, IntConstraints, FloatConstraints, DateConstraints
+from pydantic import BaseModel, model_validator, StringConstraints, Field
 from typing import Optional, Annotated
 import datetime as dt
 
@@ -9,11 +9,11 @@ class Produtos(BaseModel):
     ]
     quantidade: Annotated[
         int,
-        IntConstraints(gt=0)
+        Field(gt=0)
     ]
     valor: Annotated[
         float,
-        FloatConstraints(gt=0, le=9999999999.99)
+        Field(gt=0, le=9999999999.99)
     ]
     descricao: Optional[str] = None
     categoria: Annotated[
@@ -27,5 +27,5 @@ class Produtos(BaseModel):
 class ProdutosGet(Produtos):
     id_produto: Annotated[
         int,
-        IntConstraints(gt=0)
+        Field(gt=0)
     ]

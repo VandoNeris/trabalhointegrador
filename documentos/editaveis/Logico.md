@@ -11,6 +11,7 @@ pessoa (
     tipo, 
     nome, 
     endereco, 
+    email, 
     telefone,
     <u style="text-decoration: underline dashed;">cpf*</u>,
     <u style="text-decoration: underline dashed;">cnpj*</u>,
@@ -109,6 +110,7 @@ Table pessoa {
     tipo boolean [not null, note:'0-Fisica\n1-Juridica']
     nome varchar(60) [not null]
     endereco varchar(100) [not null]
+    email varchar(60) [not null]
     telefone varchar(13) [not null]
     cpf varchar(11) [unique]
     cnpj varchar(14) [unique]

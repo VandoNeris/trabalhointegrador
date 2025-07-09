@@ -1,27 +1,18 @@
-from pydantic import BaseModel, model_validator, StringConstraints, IntConstraints, FloatConstraints, DateConstraints
+from pydantic import BaseModel, model_validator, StringConstraints, Field
 from typing import Optional, Annotated
 import datetime as dt
 
 class Compra(BaseModel):
-    dt_emissao: Annotated[
-        dt.date,
-        DateConstraints(le=dt.now().date())
-    ]
-    dt_vencimento: Annotated[
-        dt.date,
-        DateConstraints(le=dt.now().date())
-    ]
-    dt_pagamento: Optional[Annotated[
-        dt.date,
-        DateConstraints(le=dt.now().date())
-    ]] = None
+    dt_emissao: dt.date
+    dt_vencimento: dt.date
+    dt_pagamento: Optional[dt.date] = None
     status_pag: Annotated[
         int,
-        IntConstraints(gt=0)
+        Field(gt=0)
     ]
     valor: Annotated[
         float,
-        FloatConstraints(gt=0, le=9999999999.99)
+        Field(gt=0, le=9999999999.99)
     ]
     loc_entrega: Annotated[
         str,
@@ -29,7 +20,7 @@ class Compra(BaseModel):
     ]
     id_pessoa: Annotated[
         int,
-        IntConstraints(gt=0)
+        Field(gt=0)
     ]
 
     @model_validator(mode='after')
@@ -44,5 +35,5 @@ class Compra(BaseModel):
 class CompraGet(Compra):
     id_pessoa: Annotated[
         int,
-        IntConstraints(gt=0)
+        Field(gt=0)
     ]

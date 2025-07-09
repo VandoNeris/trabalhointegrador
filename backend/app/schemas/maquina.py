@@ -1,4 +1,4 @@
-from pydantic import BaseModel, model_validator, StringConstraints, IntConstraints, FloatConstraints, DateConstraints
+from pydantic import BaseModel, model_validator, StringConstraints, Field
 from typing import Optional, Annotated
 import datetime as dt
 
@@ -11,5 +11,5 @@ class Maquina(BaseModel):
 class MaquinaGet(Maquina):
     id_maquina: Annotated[
         int,
-        IntConstraints(gt=0)
+        Field(gt=0)
     ]

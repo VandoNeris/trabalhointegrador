@@ -1,4 +1,4 @@
-from pydantic import BaseModel, model_validator, StringConstraints, IntConstraints, FloatConstraints, DateConstraints, EmailStr
+from pydantic import BaseModel, model_validator, StringConstraints, Field, EmailStr
 from typing import Optional, Annotated
 import datetime as dt
 
@@ -34,7 +34,7 @@ class Pessoa(BaseModel):
     @classmethod
     def checar_documentos(cls, model):
         if model.cpf and model.cnpj:
-            raise ValueError('Uma pessoa não pode ser física (CPF) e Jurídica (CNPJ) simultaneamente')
+            raise ValueError('Uma pessoa não pode ter CPF e CNPJ simultaneamente')
         if not model.tipo and not model.cpf:
             raise ValueError('CPF obrigatório para pessoa física')
         if model.tipo and not model.cnpj:
@@ -44,5 +44,5 @@ class Pessoa(BaseModel):
 class PessoaGet(Pessoa):
     id_pessoa: Annotated[
         int,
-        IntConstraints(gt=0)
+        Field(gt=0)
     ]
