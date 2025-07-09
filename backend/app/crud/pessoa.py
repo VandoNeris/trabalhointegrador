@@ -12,15 +12,18 @@ def listar_pessoas(db: Session) -> List[PessoaGet]:
     Returns:
         List[PessoaGet]: Lista de objetos do tipo PessoaGet contendo os dados de cada pessoa.
     """
+    # Preparando a expressão SQL
     query = text("""
         SELECT
             id_pessoa, tipo, nome, endereco, email, telefone, cpf, cnpj, razaosocial
         FROM pessoa
     """)
-        
+    
+    # Executando a query e salvando o resultado
     result = db.execute(query).mappings().all()
     if result is None: return list()
     
+    # Retornando lista de PessoaGet
     return [
         PessoaGet(
             id_pessoa=row["id_pessoa"], tipo=row["tipo"], nome=row["nome"], endereco=row["endereco"], email=row["email"], telefone=row["telefone"], cpf=row["cpf"], cnpj=row["cnpj"], razaosocial=row["razaosocial"]
@@ -39,6 +42,8 @@ def criar_pessoa(db: Session, pessoa: Pessoa) -> Optional[int]:
     Raises:
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
+    # Preparando a expressão SQL
+    # Executando a query e salvando o resultado
     param = pessoa.dict()
     query = text("""
         INSERT INTO pessoa (tipo, nome, endereco, email, telefone, cpf, cnpj, razaosocial)
@@ -46,12 +51,14 @@ def criar_pessoa(db: Session, pessoa: Pessoa) -> Optional[int]:
         RETURNING id_pessoa
     """)
 
+    # Protegendo de excessões
     try:
+        # Executando a query e salvando o resultado
         result = db.execute(query, param)
         db.commit()
-        return result.scalar()
+        return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
-        db.rollback()
+        db.rollback()               # Reverte a transação em caso de erro
         raise e
 
 def atualizar_pessoa(db: Session, pessoa: Pessoa, id_pessoa: int) -> Optional[int]:
@@ -66,6 +73,7 @@ def atualizar_pessoa(db: Session, pessoa: Pessoa, id_pessoa: int) -> Optional[in
     Raises:
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
+    # Preparando a expressão SQL
     param = pessoa.dict()
     param.update({"id_pessoa": id_pessoa})
     query = text("""
@@ -76,12 +84,14 @@ def atualizar_pessoa(db: Session, pessoa: Pessoa, id_pessoa: int) -> Optional[in
         RETURNING id_pessoa
     """)
 
+    # Protegendo de excessões
     try:
+        # Executando a query e salvando o resultado
         result = db.execute(query, param)
         db.commit()
-        return result.scalar()
+        return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
-        db.rollback()
+        db.rollback()               # Reverte a transação em caso de erro
         raise e
 
 def remover_pessoa(db: Session, id_pessoa: int) -> Optional[int]:
@@ -95,16 +105,19 @@ def remover_pessoa(db: Session, id_pessoa: int) -> Optional[int]:
     Raises:
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
+    # Preparando a expressão SQL
     query = text("""
         DELETE FROM pessoa WHERE id_pessoa = :id_pessoa RETURNING id_pessoa
     """)
 
+    # Protegendo de excessões
     try:
+        # Executando a query e salvando o resultado
         result = db.execute(query, {"id_pessoa": id_pessoa})
         db.commit()
-        return result.scalar()
+        return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
-        db.rollback()
+        db.rollback()               # Reverte a transação em caso de erro
         raise e
 
 def buscar_pessoa(db: Session, id_pessoa: int) -> Optional[PessoaGet]:
@@ -116,6 +129,7 @@ def buscar_pessoa(db: Session, id_pessoa: int) -> Optional[PessoaGet]:
     Returns:
         Optional[PessoaGet]: Objeto contendo os dados da pessoa, ou None se não encontrada.
     """
+    # Preparando a expressão SQL
     query = text("""
         SELECT 
             id_pessoa, tipo, nome, endereco, email, telefone, cpf, cnpj, razaosocial
@@ -124,9 +138,11 @@ def buscar_pessoa(db: Session, id_pessoa: int) -> Optional[PessoaGet]:
         LIMIT 1
     """)
     
+    # Executando a query e salvando o resultado
     result = db.execute(query, {"id_pessoa": id_pessoa}).mappings().fetchone()
     if result is None: return None
 
+    # Retornando PessoaGet
     return PessoaGet(
         id_pessoa=result["id_pessoa"],
         tipo=result["tipo"],
