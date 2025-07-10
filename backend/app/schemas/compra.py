@@ -1,15 +1,18 @@
 from pydantic import BaseModel, model_validator, StringConstraints, Field
 from typing import Optional, Annotated
 import datetime as dt
+from enum import IntEnum
+
+class StatusPagamento(IntEnum):
+    PENDENTE = 0
+    PAGO = 1
+    VENCIDO = 2
 
 class Compra(BaseModel):
     dt_emissao: dt.date
     dt_vencimento: dt.date
     dt_pagamento: Optional[dt.date] = None
-    status_pag: Annotated[
-        int,
-        Field(gt=0)
-    ]
+    status_pag: StatusPagamento
     valor: Annotated[
         float,
         Field(gt=0, le=9999999999.99)

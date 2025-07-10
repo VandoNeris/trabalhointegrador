@@ -41,9 +41,8 @@ Faça uma cópia do arquivo `\.env.example`, renomeie essa cópia para `\.env` e
 
 #### Executando script do Banco de Dados (PostgreSQL)
 ```
-cd scripts
-psql -U postgres -f setup_tractomaq.sql
-cd ..
+psql -U postgres -f scripts\create_tractomaq.sql
+psql -U postgres -f scripts\insert_tractomaq.sql
 ```  
 
 #### Ativando ambiente virtual

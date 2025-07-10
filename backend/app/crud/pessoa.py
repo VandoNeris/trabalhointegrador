@@ -16,7 +16,7 @@ def listar_pessoas(db: Session) -> List[PessoaGet]:
     query = text("""
         SELECT
             id_pessoa, tipo, nome, endereco, email, telefone, cpf, cnpj, razaosocial
-        FROM pessoa WHERE tipo = false
+        FROM pessoa
     """)
     
     # Executando a query e salvando o resultado
@@ -26,7 +26,15 @@ def listar_pessoas(db: Session) -> List[PessoaGet]:
     # Retornando lista de PessoaGet
     return [
         PessoaGet(
-            id_pessoa=row["id_pessoa"], tipo=row["tipo"], nome=row["nome"], endereco=row["endereco"], email=row["email"], telefone=row["telefone"], cpf=row["cpf"], cnpj=row["cnpj"], razaosocial=row["razaosocial"]
+            id_pessoa=row["id_pessoa"], 
+            tipo=row["tipo"], 
+            nome=row["nome"], 
+            endereco=row["endereco"], 
+            email=row["email"], 
+            telefone=row["telefone"], 
+            cpf=row["cpf"], 
+            cnpj=row["cnpj"], 
+            razaosocial=row["razaosocial"]
         ) 
         for row in result
     ]
@@ -43,7 +51,6 @@ def criar_pessoa(db: Session, pessoa: Pessoa) -> Optional[int]:
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
     # Preparando a expressão SQL
-    # Executando a query e salvando o resultado
     param = pessoa.dict()
     query = text("""
         INSERT INTO pessoa (tipo, nome, endereco, email, telefone, cpf, cnpj, razaosocial)

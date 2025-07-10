@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend.app.schemas.pessoa import Pessoa, PessoaGet
@@ -9,7 +9,7 @@ from typing import List
 router = APIRouter()
 
 # Definindo excessão personalidada
-http_exc = HTTPException(status_code=404, detail="Pessoa não encontrada")
+http_exc_pk = HTTPException(status_code=404, detail="Pessoa com o ID informado não foi encontrada.")
 
 @router.get("/pessoas", response_model=List[PessoaGet])
 def get_pessoas(db: Session = Depends(get_db)):
@@ -17,29 +17,29 @@ def get_pessoas(db: Session = Depends(get_db)):
 
     return result
 
-@router.post("/pessoa", response_model=MensagemResposta)
+@router.post("/pessoa", response_model=MensagemResposta, status_code=status.HTTP_201_CREATED)
 def post_pessoa(pessoa: Pessoa, db: Session = Depends(get_db)):
     result = pessoa_crud.criar_pessoa(db, pessoa)
 
-    return MensagemResposta(message="Pessoa criada", id_pessoa=result)
+    return MensagemResposta(message="Pessoa criada", id=result)
 
 @router.put("/pessoa/{id_pessoa}", response_model=MensagemResposta)
 def put_pessoa(id_pessoa: int, pessoa: Pessoa, db: Session = Depends(get_db)):
     result = pessoa_crud.atualizar_pessoa(db, pessoa, id_pessoa)
-    if result is None: raise http_exc
+    if result is None: raise http_exc_pk
     
-    return MensagemResposta(message="Pessoa atualizada", id_pessoa=result)
+    return MensagemResposta(message="Pessoa atualizada", id=result)
 
 @router.delete("/pessoa/{id_pessoa}", response_model=MensagemResposta)
 def delete_pessoa(id_pessoa: int, db: Session = Depends(get_db)):
     result = pessoa_crud.remover_pessoa(db, id_pessoa)
-    if result is None: raise http_exc
+    if result is None: raise http_exc_pk
     
-    return MensagemResposta(message="Pessoa removida", id_pessoa=result)
+    return MensagemResposta(message="Pessoa removida", id=result)
 
 @router.get("/pessoa/{id_pessoa}", response_model=PessoaGet)
 def get_pessoa(id_pessoa: int, db: Session = Depends(get_db)):
     result = pessoa_crud.buscar_pessoa(db, id_pessoa)
-    if result is None: raise http_exc
+    if result is None: raise http_exc_pk
     
     return result
