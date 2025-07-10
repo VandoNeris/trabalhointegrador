@@ -144,24 +144,24 @@ Table compra {
 }
 Ref registracompra: compra.id_pessoa > pessoa.id_pessoa
 
-Table ordem_servico {
-    id_ordem_servico integer [pk, increment]
-    dt_ordem_servico date [not null]
+Table ordemservico {
+    id_ordemservico integer [pk, increment]
+    dt_ordemservico date [not null]
     local varchar(100) [not null]
     descricao text
     id_pessoa integer [not null]            // AtribuicaoServico (1:N)
 }
-Ref registraordemservico: ordem_servico.id_pessoa > pessoa.id_pessoa
+Ref registraordemservico: ordemservico.id_pessoa > pessoa.id_pessoa
 
 Table servico {
     id_servico integer [pk, increment]
     horas numeric(5,2) [not null]
     quilometros numeric(6, 2) [not null]
     descricao text
-    id_ordem_servico integer [not null]                // Execução (1:N)
+    id_ordemservico integer [not null]                // Execução (1:N)
     id_cobranca integer                     // Gera (1:N)
 }
-Ref execução: servico.id_ordem_servico > ordem_servico.id_ordem_servico
+Ref execução: servico.id_ordemservico > ordemservico.id_ordemservico
 Ref gera: servico.id_cobranca > cobranca.id_cobranca
 
 Table produtos {

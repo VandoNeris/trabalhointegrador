@@ -4,4 +4,4 @@ import datetime as dt
 
 class MensagemResposta(BaseModel):
     message: str
-    id: Optional[int] = None
+    id: Optional[ int ] = None

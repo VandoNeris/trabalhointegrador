@@ -3,18 +3,10 @@ from typing import Optional, Annotated
 import datetime as dt
 
 class OrdemServico(BaseModel):
-    dt_ordem_servico: dt.date
-    local: Annotated[
-        str,
-        StringConstraints(max_length=100)
-    ]
-    descricao: Optional[str] = None
-    id_pessoa: Annotated[
-        int,
-        Field(gt=0)
-    ]
+    dt_ordemservico: dt.date
+    local: Annotated[ str, StringConstraints(min_length=1, max_length=100) ]
+    descricao: Optional[ str ] = None
+    id_pessoa: Annotated[ int, Field(gt=0) ]
+
 class OrdemServicoGet(OrdemServico):
-    id_ordem_servico: Annotated[
-        int,
-        Field(gt=0)
-    ]
+    id_ordemservico: Annotated[ int, Field(gt=0) ]

@@ -16,7 +16,7 @@ def listar_compras(db: Session) -> List[CompraGet]:
     # Preparando a expressão SQL
     query = text("""
         SELECT
-            dt_emissao, dt_vencimento, dt_pagamento, status_pag, valor, loc_entrega, id_pessoa
+            id_compra, dt_emissao, dt_vencimento, dt_pagamento, status_pag, valor, loc_entrega, id_pessoa
         FROM compra
     """)
     
@@ -27,6 +27,7 @@ def listar_compras(db: Session) -> List[CompraGet]:
     # Retornando lista de CompraGet
     return [
         CompraGet(
+            id_compra=row["id_compra"],
             dt_emissao=row["dt_emissao"], 
             dt_vencimento=row["dt_vencimento"],
             dt_pagamento=row["dt_pagamento"],

@@ -2,8 +2,11 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi.middleware.cors import CORSMiddleware
-from backend.app.routes import pessoa
-from backend.app.routes import compra
+from backend.app.routes import (
+    pessoa, 
+    compra, 
+    ordemservico
+)
 
 app = FastAPI()
 
@@ -31,3 +34,4 @@ async def value_error_exception_handler(request: Request, exc: ValueError):
 ### Incluindo as rotas da aplicação
 app.include_router(pessoa.router, tags=["Pessoa"])
 app.include_router(compra.router, tags=["Compra"])
+app.include_router(ordemservico.router, tags=["OrdemServico"])

@@ -1,34 +1,28 @@
 from pydantic import BaseModel, model_validator, StringConstraints, Field, EmailStr
 from typing import Optional, Annotated
 import datetime as dt
+from enum import IntEnum
+
+class TipoPessoa(IntEnum):
+    FISICA = 0
+    JURIDICA = 1
+
+    def __str__(self):
+        return self.name.capitalize()
+    
+    @classmethod
+    def choices(cls):
+        return [ (member.value, member.name.capitalize()) for member in cls ]
 
 class Pessoa(BaseModel):
     tipo: bool
-    nome: Annotated[
-        str,
-        StringConstraints(max_length=60)
-    ]
-    endereco: Annotated[
-        str,
-        StringConstraints(max_length=100)
-    ]
-    email: Optional[EmailStr] = None
-    telefone: Annotated[
-        str,
-        StringConstraints(max_length=13)
-    ]
-    cpf: Optional[Annotated[
-        str,
-        StringConstraints(max_length=11)
-    ]] = None
-    cnpj: Optional[Annotated[
-        str,
-        StringConstraints(max_length=14)
-    ]] = None
-    razaosocial: Optional[Annotated[
-        str,
-        StringConstraints(max_length=60)
-    ]] = None
+    nome: Annotated[ str, StringConstraints(min_length=1, max_length=60) ]
+    endereco: Annotated[ str, StringConstraints(min_length=1, max_length=100) ]
+    email: Optional[ EmailStr ] = None
+    telefone: Annotated[ str, StringConstraints(min_length=1, max_length=13) ]
+    cpf: Optional[ Annotated[ str, StringConstraints(min_length=1, max_length=11) ] ] = None
+    cnpj: Optional[ Annotated[ str, StringConstraints(min_length=1, max_length=14) ] ] = None
+    razaosocial: Optional[ Annotated[ str, StringConstraints(min_length=1, max_length=60) ] ] = None
     
     @model_validator(mode='after')
     @classmethod
@@ -42,7 +36,4 @@ class Pessoa(BaseModel):
         return model
     
 class PessoaGet(Pessoa):
-    id_pessoa: Annotated[
-        int,
-        Field(gt=0)
-    ]
+    id_pessoa: Annotated[ int, Field(gt=0) ]
