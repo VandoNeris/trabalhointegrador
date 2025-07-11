@@ -15,10 +15,10 @@ class TipoPessoa(IntEnum):
         return [ (member.value, member.name.capitalize()) for member in cls ]
 
 class Pessoa(BaseModel):
-    tipo: bool
+    tipo: TipoPessoa
     nome: Annotated[ str, StringConstraints(min_length=1, max_length=60) ]
     endereco: Annotated[ str, StringConstraints(min_length=1, max_length=100) ]
-    email: Optional[ EmailStr ] = None
+    email: EmailStr
     telefone: Annotated[ str, StringConstraints(min_length=1, max_length=13) ]
     cpf: Optional[ Annotated[ str, StringConstraints(min_length=1, max_length=11) ] ] = None
     cnpj: Optional[ Annotated[ str, StringConstraints(min_length=1, max_length=14) ] ] = None
@@ -29,9 +29,9 @@ class Pessoa(BaseModel):
     def checar_documentos(cls, model):
         if model.cpf and model.cnpj:
             raise ValueError('Uma pessoa não pode ter CPF e CNPJ simultaneamente')
-        if not model.tipo and not model.cpf:
+        if model.tipo == TipoPessoa.FISICA and not model.cpf:
             raise ValueError('CPF obrigatório para pessoa física')
-        if model.tipo and not model.cnpj:
+        if model.tipo == TipoPessoa.JURIDICA and not model.cnpj:
             raise ValueError('CNPJ obrigatório para pessoa jurídica')
         return model
     

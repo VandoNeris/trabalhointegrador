@@ -3,22 +3,22 @@
 
 -- Inserção de usuários
 INSERT INTO usuario (id_usuario, senha, tipo) VALUES
-('admin1', 'senha123', FALSE),
-('user1', 'senha123', TRUE),
-('user2', 'senha123', TRUE);
+('admin1', 'senha123', 0),
+('user1', 'senha123', 1),
+('user2', 'senha123', 1);
 
 -- Inserção de pessoas
 INSERT INTO pessoa (tipo, nome, endereco, email, telefone, cpf, cnpj, razaosocial) VALUES
-(FALSE, 'João da Silva', 'Rua A, 100', 'joao@email.com', '11999990000', '12345678901', NULL, NULL),
-(FALSE, 'Felipe Rocha', 'Rua E, 500', 'felipe@email.com', '11999990004', '12345678905', NULL, NULL),
-(TRUE, 'MaqTools Ltda', 'Av I, 1300', 'maq@tools.com', '11333330003', NULL, '12345678000104', 'MaqTools Ltda'),
-(FALSE, 'Carlos Lima', 'Rua C, 300', 'carlos@email.com', '11999990002', '12345678903', NULL, NULL),
-(TRUE, 'TratorTech LTDA', 'Av F, 1000', 'contato@trator.com', '11333330000', NULL, '12345678000101', 'TratorTech LTDA'),
-(FALSE, 'Ana Paula', 'Rua D, 400', 'ana@email.com', '11999990003', '12345678904', NULL, NULL),
-(TRUE, 'AgroMáquinas SA', 'Av G, 1100', 'agro@maq.com', '11333330001', NULL, '12345678000102', 'AgroMáquinas SA'),
-(TRUE, 'RuralPro ME', 'Av H, 1200', 'vendas@ruralpro.com', '11333330002', NULL, '12345678000103', 'RuralPro ME'),
-(TRUE, 'CampoForte', 'Av J, 1400', 'suporte@campoforte.com', '11333330004', NULL, '12345678000105', 'CampoForte SA'),
-(FALSE, 'Maria Souza', 'Rua B, 200', 'maria@email.com', '11999990001', '12345678902', NULL, NULL);
+(0, 'João da Silva', 'Rua A, 100', 'joao@email.com', '11999990000', '12345678901', NULL, NULL),
+(0, 'Felipe Rocha', 'Rua E, 500', 'felipe@email.com', '11999990004', '12345678905', NULL, NULL),
+(1, 'MaqTools Ltda', 'Av I, 1300', 'maq@tools.com', '11333330003', NULL, '12345678000104', 'MaqTools Ltda'),
+(0, 'Carlos Lima', 'Rua C, 300', 'carlos@email.com', '11999990002', '12345678903', NULL, NULL),
+(1, 'TratorTech LTDA', 'Av F, 1000', 'contato@trator.com', '11333330000', NULL, '12345678000101', 'TratorTech LTDA'),
+(0, 'Ana Paula', 'Rua D, 400', 'ana@email.com', '11999990003', '12345678904', NULL, NULL),
+(1, 'AgroMáquinas SA', 'Av G, 1100', 'agro@maq.com', '11333330001', NULL, '12345678000102', 'AgroMáquinas SA'),
+(1, 'RuralPro ME', 'Av H, 1200', 'vendas@ruralpro.com', '11333330002', NULL, '12345678000103', 'RuralPro ME'),
+(1, 'CampoForte', 'Av J, 1400', 'suporte@campoforte.com', '11333330004', NULL, '12345678000105', 'CampoForte SA'),
+(0, 'Maria Souza', 'Rua B, 200', 'maria@email.com', '11999990001', '12345678902', NULL, NULL);
 
 -- Inserção de máquinas
 INSERT INTO maquina (nome, descricao) VALUES

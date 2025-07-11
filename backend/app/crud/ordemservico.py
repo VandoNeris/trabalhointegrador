@@ -25,16 +25,7 @@ def listar_ordemservicos(db: Session) -> List[OrdemServicoGet]:
     if result is None: return list()
         
     # Retornando lista de OrdemServicoGet
-    return [
-        OrdemServicoGet(
-            id_ordemservico=row["id_ordemservico"], 
-            dt_ordemservico=row["dt_ordemservico"],
-            local=row["local"],
-            descricao=row["descricao"],
-            id_pessoa=row["id_pessoa"]
-        ) 
-        for row in result
-    ]
+    return [ OrdemServicoGet(**row) for row in result ]
 
 def criar_ordemservico(db: Session, ordemservico: OrdemServico) -> Optional[int]:
     """
@@ -152,13 +143,6 @@ def buscar_ordemservico(db: Session, id_ordemservico: int) -> Optional[OrdemServ
     
     # Executando a query e salvando o resultado
     result = db.execute(query, {"id_ordemservico": id_ordemservico}).mappings().fetchone()
-    if result is None: return None
 
     # Retornando OrdemServicoGet
-    return OrdemServicoGet(
-        id_ordemservico=result["id_ordemservico"], 
-        dt_ordemservico=result["dt_ordemservico"],
-        local=result["local"],
-        descricao=result["descricao"],
-        id_pessoa=result["id_pessoa"]
-    )
+    return None if result is None else OrdemServicoGet(**result)

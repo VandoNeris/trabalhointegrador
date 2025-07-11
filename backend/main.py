@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.routes import (
+    usuario,
     pessoa, 
     compra, 
     ordemservico
@@ -32,6 +33,7 @@ async def value_error_exception_handler(request: Request, exc: ValueError):
     return JSONResponse(status_code=400, content={"detail": str(exc)})
 
 ### Incluindo as rotas da aplicação
+app.include_router(usuario.router, tags=["Usuario"])
 app.include_router(pessoa.router, tags=["Pessoa"])
 app.include_router(compra.router, tags=["Compra"])
 app.include_router(ordemservico.router, tags=["OrdemServico"])

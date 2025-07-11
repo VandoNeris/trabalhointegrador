@@ -102,12 +102,12 @@ Project project_name {
 Table usuario {
     id_usuario varchar(60) [pk]
     senha varchar(60) [not null]
-    tipo boolean [not null]
+    tipo smallint [not null, note:'0-Administrador\n1-Regular']
 }
 
 Table pessoa {
     id_pessoa integer [pk, increment]
-    tipo boolean [not null, note:'0-Fisica\n1-Juridica']
+    tipo smallint [not null, note:'0-Fisica\n1-Juridica']
     nome varchar(60) [not null]
     endereco varchar(100) [not null]
     email varchar(60) [not null]
@@ -122,7 +122,7 @@ Table cobranca {
     dt_emissao date [not null]
     dt_vencimento date [not null]
     dt_pagamento date
-    statuspag smallint [not null]
+    statuspag smallint [not null, note:'0-Pendente\n1-Paga\n2-Vencida']
     valor numeric(12,2) [not null]
 }
 
@@ -138,7 +138,7 @@ Table compra {
     dt_vencimento date [not null]
     dt_pagamento date
     loc_entrega varchar(100) [not null]
-    statuspag smallint [not null]
+    statuspag smallint [not null, note:'0-Pendente\n1-Paga\n2-Vencida']
     valor numeric(12,2) [not null]
     id_pessoa integer [not null]            // AtribuicaoCompra (1:N)
 }

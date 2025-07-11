@@ -21,23 +21,9 @@ def listar_pessoas(db: Session) -> List[PessoaGet]:
     
     # Executando a query e salvando o resultado
     result = db.execute(query).mappings().all()
-    if result is None: return list()
     
     # Retornando lista de PessoaGet
-    return [
-        PessoaGet(
-            id_pessoa=row["id_pessoa"], 
-            tipo=row["tipo"], 
-            nome=row["nome"], 
-            endereco=row["endereco"], 
-            email=row["email"], 
-            telefone=row["telefone"], 
-            cpf=row["cpf"], 
-            cnpj=row["cnpj"], 
-            razaosocial=row["razaosocial"]
-        ) 
-        for row in result
-    ]
+    return [ PessoaGet(**row) for row in result ]
 
 def criar_pessoa(db: Session, pessoa: Pessoa) -> Optional[int]:
     """
@@ -147,17 +133,6 @@ def buscar_pessoa(db: Session, id_pessoa: int) -> Optional[PessoaGet]:
     
     # Executando a query e salvando o resultado
     result = db.execute(query, {"id_pessoa": id_pessoa}).mappings().fetchone()
-    if result is None: return None
 
     # Retornando PessoaGet
-    return PessoaGet(
-        id_pessoa=result["id_pessoa"],
-        tipo=result["tipo"],
-        nome=result["nome"],
-        endereco=result["endereco"],
-        email=result["email"],
-        telefone=result["telefone"],
-        cpf=result["cpf"],
-        cnpj=result["cnpj"],
-        razaosocial=result["razaosocial"]
-    )
+    return None if result is None else PessoaGet(**result)

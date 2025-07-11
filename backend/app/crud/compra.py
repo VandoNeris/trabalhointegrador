@@ -25,19 +25,7 @@ def listar_compras(db: Session) -> List[CompraGet]:
     if result is None: return list()
     
     # Retornando lista de CompraGet
-    return [
-        CompraGet(
-            id_compra=row["id_compra"],
-            dt_emissao=row["dt_emissao"], 
-            dt_vencimento=row["dt_vencimento"],
-            dt_pagamento=row["dt_pagamento"],
-            status_pag=row["status_pag"],
-            valor=row["valor"],
-            loc_entrega=row["loc_entrega"],
-            id_pessoa=row["id_pessoa"]
-        ) 
-        for row in result
-    ]
+    return [ CompraGet(**row) for row in result ]
 
 def criar_compra(db: Session, compra: Compra) -> Optional[int]:
     """
@@ -155,16 +143,6 @@ def buscar_compra(db: Session, id_compra: int) -> Optional[CompraGet]:
     
     # Executando a query e salvando o resultado
     result = db.execute(query, {"id_compra": id_compra}).mappings().fetchone()
-    if result is None: return None
 
     # Retornando CompraGet
-    return CompraGet(
-        id_compra=result["id_compra"], 
-        dt_emissao=result["dt_emissao"], 
-        dt_vencimento=result["dt_vencimento"], 
-        dt_pagamento=result["dt_pagamento"], 
-        status_pag=result["status_pag"], 
-        valor=result["valor"], 
-        loc_entrega=result["loc_entrega"], 
-        id_pessoa=result["id_pessoa"]
-    )
+    return None if result is None else CompraGet(**result)

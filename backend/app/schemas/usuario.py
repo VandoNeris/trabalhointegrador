@@ -16,7 +16,7 @@ class TipoUsuario(IntEnum):
 
 class Usuario(BaseModel):
     senha: Annotated[ str, StringConstraints(min_length=1, max_length=60) ]
-    tipo: bool
+    tipo: TipoUsuario
 
 class UsuarioGet(Usuario):
     id_usuario: Annotated[ str, StringConstraints(min_length=1, max_length=60) ]
