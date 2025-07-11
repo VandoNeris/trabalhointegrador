@@ -1,14 +1,14 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
-from backend.app.schemas.pessoa import Pessoa, PessoaGet
+from sqlalchemy import text
 from typing import Optional, List
+from backend.app.schemas.pessoa import Pessoa, PessoaGet
 
-def listar_pessoas(db: Session) -> List[PessoaGet]:
+async def listar_pessoas(session: AsyncSession) -> List[PessoaGet]:
     """
     Retorna uma lista de todas as pessoas cadastradas no banco de dados.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
     Returns:
         List[PessoaGet]: Lista de objetos do tipo PessoaGet contendo os dados de cada pessoa.
     """
@@ -20,16 +20,16 @@ def listar_pessoas(db: Session) -> List[PessoaGet]:
     """)
     
     # Executando a query e salvando o resultado
-    result = db.execute(query).mappings().all()
+    result = (await session.execute(query)).mappings().all()
     
     # Retornando lista de PessoaGet
     return [ PessoaGet(**row) for row in result ]
 
-def criar_pessoa(db: Session, pessoa: Pessoa) -> Optional[int]:
+async def criar_pessoa(session: AsyncSession, pessoa: Pessoa) -> Optional[int]:
     """
     Insere uma nova pessoa na tabela `pessoa`.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
         pessoa (Pessoa): Objeto contendo os dados da pessoa a ser inserida.
     Returns:
         Optional[int]: ID da pessoa criada, ou None em caso de falha.
@@ -47,18 +47,18 @@ def criar_pessoa(db: Session, pessoa: Pessoa) -> Optional[int]:
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = db.execute(query, param)
-        db.commit()
+        result = (await session.execute(query, param))
+        await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
-        db.rollback()               # Reverte a transação em caso de erro
+        await session.rollback()    # Reverte a transação em caso de erro
         raise e
 
-def atualizar_pessoa(db: Session, pessoa: Pessoa, id_pessoa: int) -> Optional[int]:
+async def atualizar_pessoa(session: AsyncSession, pessoa: Pessoa, id_pessoa: int) -> Optional[int]:
     """
     Atualiza os dados de uma pessoa existente com base no ID informado.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
         pessoa (Pessoa): Objeto contendo os novos dados da pessoa.
         id_pessoa (int): ID da pessoa a ser atualizada.
     Returns:
@@ -80,18 +80,18 @@ def atualizar_pessoa(db: Session, pessoa: Pessoa, id_pessoa: int) -> Optional[in
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = db.execute(query, param)
-        db.commit()
+        result = (await session.execute(query, param))
+        await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
-        db.rollback()               # Reverte a transação em caso de erro
+        await session.rollback()    # Reverte a transação em caso de erro
         raise e
 
-def remover_pessoa(db: Session, id_pessoa: int) -> Optional[int]:
+async def remover_pessoa(session: AsyncSession, id_pessoa: int) -> Optional[int]:
     """
     Remove uma pessoa da tabela `pessoa` com base no ID informado.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
         id_pessoa (int): ID da pessoa a ser removida.
     Returns:
         Optional[int]: ID da pessoa removida, ou None caso não exista.
@@ -106,18 +106,18 @@ def remover_pessoa(db: Session, id_pessoa: int) -> Optional[int]:
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = db.execute(query, {"id_pessoa": id_pessoa})
-        db.commit()
+        result = (await session.execute(query, {"id_pessoa": id_pessoa}))
+        await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
-        db.rollback()               # Reverte a transação em caso de erro
+        await session.rollback()    # Reverte a transação em caso de erro
         raise e
 
-def buscar_pessoa(db: Session, id_pessoa: int) -> Optional[PessoaGet]:
+async def buscar_pessoa(session: AsyncSession, id_pessoa: int) -> Optional[PessoaGet]:
     """
     Busca uma pessoa pelo ID na tabela `pessoa`.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
         id_pessoa (int): ID da pessoa a ser consultada.
     Returns:
         Optional[PessoaGet]: Objeto contendo os dados da pessoa, ou None se não encontrada.
@@ -132,7 +132,7 @@ def buscar_pessoa(db: Session, id_pessoa: int) -> Optional[PessoaGet]:
     """)
     
     # Executando a query e salvando o resultado
-    result = db.execute(query, {"id_pessoa": id_pessoa}).mappings().fetchone()
+    result = (await session.execute(query, {"id_pessoa": id_pessoa})).mappings().fetchone()
 
     # Retornando PessoaGet
     return None if result is None else PessoaGet(**result)

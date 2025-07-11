@@ -1,15 +1,15 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import text
+from typing import Optional, List
 from backend.app.schemas.compra import Compra, CompraGet
 from backend.app.crud import pessoa as pessoa_crud
-from typing import Optional, List
 
-def listar_compras(db: Session) -> List[CompraGet]:
+async def listar_compras(session: AsyncSession) -> List[CompraGet]:
     """
     Retorna uma lista de todas as compras cadastradas no banco de dados.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
     Returns:
         List[CompraGet]: Lista de objetos do tipo CompraGet contendo os dados de cada compra.
     """
@@ -21,17 +21,17 @@ def listar_compras(db: Session) -> List[CompraGet]:
     """)
     
     # Executando a query e salvando o resultado
-    result = db.execute(query).mappings().all()
+    result = (await session.execute(query)).mappings().all()
     if result is None: return list()
     
     # Retornando lista de CompraGet
     return [ CompraGet(**row) for row in result ]
 
-def criar_compra(db: Session, compra: Compra) -> Optional[int]:
+async def criar_compra(session: AsyncSession, compra: Compra) -> Optional[int]:
     """
     Insere uma nova compra na tabela `compra`.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
         compra (Compra): Objeto contendo os dados da compra a ser inserida.
     Returns:
         Optional[int]: ID da compra criada, ou None em caso de falha.
@@ -39,7 +39,7 @@ def criar_compra(db: Session, compra: Compra) -> Optional[int]:
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """    
     # Validação de chaves estrangeiras
-    if pessoa_crud.buscar_pessoa(db, compra.id_pessoa) is None: 
+    if pessoa_crud.buscar_pessoa(session, compra.id_pessoa) is None: 
         return None
     
     # Preparando a expressão SQL
@@ -53,18 +53,18 @@ def criar_compra(db: Session, compra: Compra) -> Optional[int]:
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = db.execute(query, param)
-        db.commit()
+        result = (await session.execute(query, param))
+        await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
-        db.rollback()               # Reverte a transação em caso de erro
+        await session.rollback()               # Reverte a transação em caso de erro
         raise e
 
-def atualizar_compra(db: Session, compra: Compra, id_compra: int) -> Optional[int]:
+async def atualizar_compra(session: AsyncSession, compra: Compra, id_compra: int) -> Optional[int]:
     """
     Atualiza os dados de uma compra existente com base no ID informado.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
         compra (Compra): Objeto contendo os novos dados da compra.
         id_compra (int): ID da compra a ser atualizada.
     Returns:
@@ -73,7 +73,7 @@ def atualizar_compra(db: Session, compra: Compra, id_compra: int) -> Optional[in
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
     # Validação de chaves estrangeiras
-    if pessoa_crud.buscar_pessoa(db, compra.id_pessoa) is None: 
+    if pessoa_crud.buscar_pessoa(session, compra.id_pessoa) is None: 
         return None
     
     # Preparando a expressão SQL
@@ -90,18 +90,18 @@ def atualizar_compra(db: Session, compra: Compra, id_compra: int) -> Optional[in
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = db.execute(query, param)
-        db.commit()
+        result = (await session.execute(query, param))
+        await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
-        db.rollback()               # Reverte a transação em caso de erro
+        await session.rollback()               # Reverte a transação em caso de erro
         raise e
 
-def remover_compra(db: Session, id_compra: int) -> Optional[int]:
+async def remover_compra(session: AsyncSession, id_compra: int) -> Optional[int]:
     """
     Remove uma compra da tabela `compra` com base no ID informado.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
         id_compra (int): ID da compra a ser removida.
     Returns:
         Optional[int]: ID da compra removida, ou None caso não exista.
@@ -116,18 +116,18 @@ def remover_compra(db: Session, id_compra: int) -> Optional[int]:
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = db.execute(query, {"id_compra": id_compra})
-        db.commit()
+        result = (await session.execute(query, {"id_compra": id_compra}))
+        await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
-        db.rollback()               # Reverte a transação em caso de erro
+        await session.rollback()               # Reverte a transação em caso de erro
         raise e
 
-def buscar_compra(db: Session, id_compra: int) -> Optional[CompraGet]:
+async def buscar_compra(session: AsyncSession, id_compra: int) -> Optional[CompraGet]:
     """
     Busca uma compra pelo ID na tabela `compra`.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
         id_compra (int): ID da compra a ser consultada.
     Returns:
         Optional[CompraGet]: Objeto contendo os dados da compra, ou None se não encontrada.
@@ -142,7 +142,7 @@ def buscar_compra(db: Session, id_compra: int) -> Optional[CompraGet]:
     """)
     
     # Executando a query e salvando o resultado
-    result = db.execute(query, {"id_compra": id_compra}).mappings().fetchone()
+    result = (await session.execute(query, {"id_compra": id_compra})).mappings().fetchone()
 
     # Retornando CompraGet
     return None if result is None else CompraGet(**result)

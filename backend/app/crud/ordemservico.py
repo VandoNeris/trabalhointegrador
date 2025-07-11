@@ -1,15 +1,15 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import text
+from typing import Optional, List
 from backend.app.schemas.ordemservico import OrdemServico, OrdemServicoGet
 from backend.app.crud import pessoa as pessoa_crud
-from typing import Optional, List
 
-def listar_ordemservicos(db: Session) -> List[OrdemServicoGet]:
+async def listar_ordemservicos(session: AsyncSession) -> List[OrdemServicoGet]:
     """
     Retorna uma lista de todas as ordemservicos cadastradas no banco de dados.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
     Returns:
         List[OrdemServicoGet]: Lista de objetos do tipo OrdemServicoGet contendo os dados de cada ordemservico.
     """
@@ -21,17 +21,17 @@ def listar_ordemservicos(db: Session) -> List[OrdemServicoGet]:
     """)
     
     # Executando a query e salvando o resultado
-    result = db.execute(query).mappings().all()
+    result = (await session.execute(query)).mappings().all()
     if result is None: return list()
         
     # Retornando lista de OrdemServicoGet
     return [ OrdemServicoGet(**row) for row in result ]
 
-def criar_ordemservico(db: Session, ordemservico: OrdemServico) -> Optional[int]:
+async def criar_ordemservico(session: AsyncSession, ordemservico: OrdemServico) -> Optional[int]:
     """
     Insere uma nova ordemservico na tabela `ordemservico`.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
         ordemservico (OrdemServico): Objeto contendo os dados da ordemservico a ser inserida.
     Returns:
         Optional[int]: ID da ordemservico criada, ou None em caso de falha.
@@ -39,7 +39,7 @@ def criar_ordemservico(db: Session, ordemservico: OrdemServico) -> Optional[int]
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """    
     # Validação de chaves estrangeiras
-    if pessoa_crud.buscar_pessoa(db, ordemservico.id_pessoa) is None: 
+    if pessoa_crud.buscar_pessoa(session, ordemservico.id_pessoa) is None: 
         return None
     
     # Preparando a expressão SQL
@@ -53,18 +53,18 @@ def criar_ordemservico(db: Session, ordemservico: OrdemServico) -> Optional[int]
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = db.execute(query, param)
-        db.commit()
+        result = (await session.execute(query, param))
+        await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
-        db.rollback()               # Reverte a transação em caso de erro
+        await session.rollback()               # Reverte a transação em caso de erro
         raise e
 
-def atualizar_ordemservico(db: Session, ordemservico: OrdemServico, id_ordemservico: int) -> Optional[int]:
+async def atualizar_ordemservico(session: AsyncSession, ordemservico: OrdemServico, id_ordemservico: int) -> Optional[int]:
     """
     Atualiza os dados de uma ordemservico existente com base no ID informado.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
         ordemservico (OrdemServico): Objeto contendo os novos dados da ordemservico.
         id_ordemservico (int): ID da ordemservico a ser atualizada.
     Returns:
@@ -73,7 +73,7 @@ def atualizar_ordemservico(db: Session, ordemservico: OrdemServico, id_ordemserv
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
     # Validação de chaves estrangeiras
-    if pessoa_crud.buscar_pessoa(db, ordemservico.id_pessoa) is None: 
+    if pessoa_crud.buscar_pessoa(session, ordemservico.id_pessoa) is None: 
         return None
     
     # Preparando a expressão SQL
@@ -90,18 +90,18 @@ def atualizar_ordemservico(db: Session, ordemservico: OrdemServico, id_ordemserv
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = db.execute(query, param)
-        db.commit()
+        result = (await session.execute(query, param))
+        await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
-        db.rollback()               # Reverte a transação em caso de erro
+        await session.rollback()               # Reverte a transação em caso de erro
         raise e
 
-def remover_ordemservico(db: Session, id_ordemservico: int) -> Optional[int]:
+async def remover_ordemservico(session: AsyncSession, id_ordemservico: int) -> Optional[int]:
     """
     Remove uma ordemservico da tabela `ordemservico` com base no ID informado.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
         id_ordemservico (int): ID da ordemservico a ser removida.
     Returns:
         Optional[int]: ID da ordemservico removida, ou None caso não exista.
@@ -116,18 +116,18 @@ def remover_ordemservico(db: Session, id_ordemservico: int) -> Optional[int]:
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = db.execute(query, {"id_ordemservico": id_ordemservico})
-        db.commit()
+        result = (await session.execute(query, {"id_ordemservico": id_ordemservico}))
+        await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
-        db.rollback()               # Reverte a transação em caso de erro
+        await session.rollback()               # Reverte a transação em caso de erro
         raise e
 
-def buscar_ordemservico(db: Session, id_ordemservico: int) -> Optional[OrdemServicoGet]:
+async def buscar_ordemservico(session: AsyncSession, id_ordemservico: int) -> Optional[OrdemServicoGet]:
     """
     Busca uma ordemservico pelo ID na tabela `ordemservico`.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
         id_ordemservico (int): ID da ordemservico a ser consultada.
     Returns:
         Optional[OrdemServicoGet]: Objeto contendo os dados da ordemservico, ou None se não encontrada.
@@ -142,7 +142,7 @@ def buscar_ordemservico(db: Session, id_ordemservico: int) -> Optional[OrdemServ
     """)
     
     # Executando a query e salvando o resultado
-    result = db.execute(query, {"id_ordemservico": id_ordemservico}).mappings().fetchone()
+    result = (await session.execute(query, {"id_ordemservico": id_ordemservico})).mappings().fetchone()
 
     # Retornando OrdemServicoGet
     return None if result is None else OrdemServicoGet(**result)

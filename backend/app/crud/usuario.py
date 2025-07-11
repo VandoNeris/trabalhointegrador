@@ -1,14 +1,14 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
-from backend.app.schemas.usuario import Usuario, UsuarioGet
+from sqlalchemy import text
 from typing import Optional, List
+from backend.app.schemas.usuario import Usuario, UsuarioGet
 
-def listar_usuarios(db: Session) -> List[UsuarioGet]:
+async def listar_usuarios(session: AsyncSession) -> List[UsuarioGet]:
     """
     Retorna uma lista de todas as usuarios cadastradas no banco de dados.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
     Returns:
         List[UsuarioGet]: Lista de objetos do tipo UsuarioGet contendo os dados de cada usuario.
     """
@@ -20,16 +20,16 @@ def listar_usuarios(db: Session) -> List[UsuarioGet]:
     """)
     
     # Executando a query e salvando o resultado
-    result = db.execute(query).mappings().all()
+    result = (await session.execute(query)).mappings().all()
     
     # Retornando lista de UsuarioGet
     return [ UsuarioGet(**row) for row in result ]
 
-def criar_usuario(db: Session, usuario: Usuario) -> Optional[int]:
+async def criar_usuario(session: AsyncSession, usuario: Usuario) -> Optional[int]:
     """
     Insere uma nova usuario na tabela `usuario`.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
         usuario (Usuario): Objeto contendo os dados da usuario a ser inserida.
     Returns:
         Optional[int]: ID da usuario criada, ou None em caso de falha.
@@ -47,18 +47,18 @@ def criar_usuario(db: Session, usuario: Usuario) -> Optional[int]:
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = db.execute(query, param)
-        db.commit()
+        result = (await session.execute(query, param))
+        await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
-        db.rollback()               # Reverte a transação em caso de erro
+        await session.rollback()               # Reverte a transação em caso de erro
         raise e
 
-def atualizar_usuario(db: Session, usuario: Usuario, id_usuario: int) -> Optional[int]:
+async def atualizar_usuario(session: AsyncSession, usuario: Usuario, id_usuario: int) -> Optional[int]:
     """
     Atualiza os dados de uma usuario existente com base no ID informado.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
         usuario (Usuario): Objeto contendo os novos dados da usuario.
         id_usuario (int): ID da usuario a ser atualizada.
     Returns:
@@ -80,18 +80,18 @@ def atualizar_usuario(db: Session, usuario: Usuario, id_usuario: int) -> Optiona
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = db.execute(query, param)
-        db.commit()
+        result = (await session.execute(query, param))
+        await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
-        db.rollback()               # Reverte a transação em caso de erro
+        await session.rollback()               # Reverte a transação em caso de erro
         raise e
 
-def remover_usuario(db: Session, id_usuario: int) -> Optional[int]:
+async def remover_usuario(session: AsyncSession, id_usuario: int) -> Optional[int]:
     """
     Remove uma usuario da tabela `usuario` com base no ID informado.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
         id_usuario (int): ID da usuario a ser removida.
     Returns:
         Optional[int]: ID da usuario removida, ou None caso não exista.
@@ -106,18 +106,18 @@ def remover_usuario(db: Session, id_usuario: int) -> Optional[int]:
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = db.execute(query, {"id_usuario": id_usuario})
-        db.commit()
+        result = (await session.execute(query, {"id_usuario": id_usuario}))
+        await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
-        db.rollback()               # Reverte a transação em caso de erro
+        await session.rollback()               # Reverte a transação em caso de erro
         raise e
 
-def buscar_usuario(db: Session, id_usuario: int) -> Optional[UsuarioGet]:
+async def buscar_usuario(session: AsyncSession, id_usuario: int) -> Optional[UsuarioGet]:
     """
     Busca uma usuario pelo ID na tabela `usuario`.
     Args:
-        db (Session): Sessão ativa com o banco de dados.
+        session (AsyncSession): Sessão ativa com o banco de dados.
         id_usuario (int): ID da usuario a ser consultada.
     Returns:
         Optional[UsuarioGet]: Objeto contendo os dados da usuario, ou None se não encontrada.
@@ -132,7 +132,7 @@ def buscar_usuario(db: Session, id_usuario: int) -> Optional[UsuarioGet]:
     """)
     
     # Executando a query e salvando o resultado
-    result = db.execute(query, {"id_usuario": id_usuario}).mappings().fetchone()
+    result = (await session.execute(query, {"id_usuario": id_usuario})).mappings().fetchone()
 
     # Retornando UsuarioGet
     return None if result is None else UsuarioGet(**result)
