@@ -15,7 +15,7 @@ async def listar_pessoas(session: AsyncSession) -> List[PessoaGet]:
     # Preparando a expressão SQL
     query = text("""
         SELECT
-            id_pessoa, tipo, nome, endereco, email, telefone, cpf, cnpj, razaosocial
+            id_pessoa, tipo, nome, endereco, telefone, email, cpf, cnpj, razao_social
         FROM pessoa 
     """)
     
@@ -36,20 +36,18 @@ async def listar_pessoas_por_tipo(session: AsyncSession, tipo: int) -> List[Pess
     Returns:
         List[PessoaGet]: Lista de objetos PessoaGet contendo os dados de cada pessoa encontrada.
     """
-    # 1. Preparando a expressão SQL com um parâmetro de vinculação (:tipo_filtro)
+    # Preparando a expressão SQL
     query = text("""
         SELECT
-            id_pessoa, tipo, nome, endereco, email, telefone, cpf, cnpj, razaosocial
+            id_pessoa, tipo, nome, endereco, telefone, email, cpf, cnpj, razao_social
         FROM pessoa
-        WHERE tipo = :tipo_filtro 
+        WHERE tipo=:tipo_filtro 
     """)
     
-    # 2. Executando a query, passando o valor do filtro no segundo argumento
-    result = (
-        await session.execute(query, {"tipo_filtro": tipo})
-    ).mappings().all()
+    # Executando a query e salvando o resultado
+    result = (await session.execute(query, {"tipo_filtro": tipo})).mappings().all()
     
-    # 3. Retornando a lista de PessoaGet (mesma lógica da função anterior)
+    # Retornando lista de PessoaGet
     return [PessoaGet(**row) for row in result]
 
 async def criar_pessoa(session: AsyncSession, pessoa: Pessoa) -> Optional[int]:
@@ -66,8 +64,8 @@ async def criar_pessoa(session: AsyncSession, pessoa: Pessoa) -> Optional[int]:
     # Preparando a expressão SQL
     param = pessoa.dict()
     query = text("""
-        INSERT INTO pessoa (tipo, nome, endereco, email, telefone, cpf, cnpj, razaosocial)
-        VALUES (:tipo, :nome, :endereco, :email, :telefone, :cpf, :cnpj, :razaosocial)
+        INSERT INTO pessoa (tipo, nome, endereco, telefone, email, cpf, cnpj, razao_social)
+        VALUES (:tipo, :nome, :endereco, :telefone, :email, :cpf, :cnpj, :razao_social)
         RETURNING id_pessoa
     """)
 
@@ -99,8 +97,8 @@ async def atualizar_pessoa(session: AsyncSession, pessoa: Pessoa, id_pessoa: int
     query = text("""
         UPDATE pessoa
         SET 
-            tipo=:tipo, nome=:nome, endereco=:endereco, email=:email, telefone=:telefone, cpf=:cpf, cnpj=:cnpj, razaosocial=:razaosocial
-        WHERE id_pessoa = :id_pessoa
+            tipo=:tipo, nome=:nome, endereco=:endereco, telefone=:telefone, email=:email, cpf=:cpf, cnpj=:cnpj, razao_social=:razao_social
+        WHERE id_pessoa=:id_pessoa
         RETURNING id_pessoa
     """)
 
@@ -127,7 +125,7 @@ async def remover_pessoa(session: AsyncSession, id_pessoa: int) -> Optional[int]
     """
     # Preparando a expressão SQL
     query = text("""
-        DELETE FROM pessoa WHERE id_pessoa = :id_pessoa RETURNING id_pessoa
+        DELETE FROM pessoa WHERE id_pessoa=:id_pessoa RETURNING id_pessoa
     """)
 
     # Protegendo de excessões
@@ -152,9 +150,9 @@ async def buscar_pessoa(session: AsyncSession, id_pessoa: int) -> Optional[Pesso
     # Preparando a expressão SQL
     query = text("""
         SELECT 
-            id_pessoa, tipo, nome, endereco, email, telefone, cpf, cnpj, razaosocial
+            id_pessoa, tipo, nome, endereco, telefone, email, cpf, cnpj, razao_social
         FROM pessoa
-        WHERE id_pessoa = :id_pessoa
+        WHERE id_pessoa=:id_pessoa
         LIMIT 1
     """)
     

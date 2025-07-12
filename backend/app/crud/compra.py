@@ -16,7 +16,7 @@ async def listar_compras(session: AsyncSession) -> List[CompraGet]:
     # Preparando a expressão SQL
     query = text("""
         SELECT
-            id_compra, dt_emissao, dt_vencimento, dt_pagamento, status_pag, valor, loc_entrega, id_pessoa
+            id_compra, loc_entrega, valor, dt_emissao, dt_vencimento, dt_entrega, dt_pagamento, id_pessoa
         FROM compra
     """)
     
@@ -45,8 +45,8 @@ async def criar_compra(session: AsyncSession, compra: Compra) -> Optional[int]:
     # Preparando a expressão SQL
     param = compra.dict()
     query = text("""
-        INSERT INTO compra (dt_emissao, dt_vencimento, dt_pagamento, status_pag, valor, loc_entrega, id_pessoa)
-        VALUES (:dt_emissao, :dt_vencimento, :dt_pagamento, :status_pag, :valor, :loc_entrega, :id_pessoa)
+        INSERT INTO compra (loc_entrega, valor, dt_emissao, dt_vencimento, dt_entrega, dt_pagamento, id_pessoa)
+        VALUES (:loc_entrega, :valor, :dt_emissao, :dt_vencimento, :dt_entrega, :dt_pagamento, :id_pessoa)
         RETURNING id_compra
     """)
 
@@ -82,7 +82,7 @@ async def atualizar_compra(session: AsyncSession, compra: Compra, id_compra: int
     query = text("""
         UPDATE compra
         SET 
-            dt_emissao=:dt_emissao, dt_vencimento=:dt_vencimento, dt_pagamento=:dt_pagamento, status_pag=:status_pag, valor=:valor, loc_entrega=:loc_entrega, id_pessoa=:id_pessoa
+            loc_entrega=:loc_entrega, valor=:valor, dt_emissao=:dt_emissao, dt_vencimento=:dt_vencimento, dt_entrega=:dt_entrega, dt_pagamento=:dt_pagamento, id_pessoa=:id_pessoa
         WHERE id_compra=:id_compra
         RETURNING id_compra
     """)
@@ -135,7 +135,7 @@ async def buscar_compra(session: AsyncSession, id_compra: int) -> Optional[Compr
     # Preparando a expressão SQL
     query = text("""
         SELECT 
-            id_compra, dt_emissao, dt_vencimento, dt_pagamento, status_pag, valor, loc_entrega, id_pessoa
+            id_compra, loc_entrega, valor, dt_emissao, dt_vencimento, dt_entrega, dt_pagamento, id_pessoa
         FROM compra
         WHERE id_compra=:id_compra
         LIMIT 1

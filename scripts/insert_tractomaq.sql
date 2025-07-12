@@ -1,97 +1,124 @@
--- Conecta ao banco de dados tractomaq
-\c tractomaq;
+-- Acessando o banco de dados: tractomaq
+\c tractomaq
 
--- Inserção de usuários
-INSERT INTO usuario (id_usuario, senha, tipo) VALUES
-('admin1', 'senha123', 0),
-('user1', 'senha123', 1),
-('user2', 'senha123', 1);
+-- Populando usuario (6 entradas)
+INSERT INTO usuario (nome, senha, tipo) VALUES
+('admin', 'senha123', 0),
+('joao', 'senha123', 1),
+('maria', 'senha123', 1),
+('carlos', 'senha123', 1),
+('ana', 'senha123', 1),
+('pedro', 'senha123', 1);
 
--- Inserção de pessoas
-INSERT INTO pessoa (tipo, nome, endereco, email, telefone, cpf, cnpj, razaosocial) VALUES
-(0, 'João da Silva', 'Rua A, 100', 'joao@email.com', '11999990000', '12345678901', NULL, NULL),
-(0, 'Felipe Rocha', 'Rua E, 500', 'felipe@email.com', '11999990004', '12345678905', NULL, NULL),
-(1, 'MaqTools Ltda', 'Av I, 1300', 'maq@tools.com', '11333330003', NULL, '12345678000104', 'MaqTools Ltda'),
-(0, 'Carlos Lima', 'Rua C, 300', 'carlos@email.com', '11999990002', '12345678903', NULL, NULL),
-(1, 'TratorTech LTDA', 'Av F, 1000', 'contato@trator.com', '11333330000', NULL, '12345678000101', 'TratorTech LTDA'),
-(0, 'Ana Paula', 'Rua D, 400', 'ana@email.com', '11999990003', '12345678904', NULL, NULL),
-(1, 'AgroMáquinas SA', 'Av G, 1100', 'agro@maq.com', '11333330001', NULL, '12345678000102', 'AgroMáquinas SA'),
-(1, 'RuralPro ME', 'Av H, 1200', 'vendas@ruralpro.com', '11333330002', NULL, '12345678000103', 'RuralPro ME'),
-(1, 'CampoForte', 'Av J, 1400', 'suporte@campoforte.com', '11333330004', NULL, '12345678000105', 'CampoForte SA'),
-(0, 'Maria Souza', 'Rua B, 200', 'maria@email.com', '11999990001', '12345678902', NULL, NULL);
+-- Populando pessoa (8 entradas)
+INSERT INTO pessoa (tipo, nome, endereco, telefone, email, cpf, cnpj, razao_social) VALUES
+(0, 'João Silva', 'Rua A, 123', '11999990001', 'joao@email.com', '12345678901', NULL, NULL),
+(0, 'Maria Souza', 'Rua B, 456', '11999990002', 'maria@email.com', '23456789012', NULL, NULL),
+(0, 'Carlos Lima', 'Rua C, 789', '11999990003', 'carlos@email.com', '34567890123', NULL, NULL),
+(0, 'Ana Paula', 'Rua D, 101', '11999990004', 'ana@email.com', '45678901234', NULL, NULL),
+(1, 'Tracto LTDA', 'Av. Industrial, 333', '1122223333', 'contato@tracto.com', NULL, '12345678000199', 'Tracto Máquinas LTDA'),
+(1, 'AgroTools S/A', 'Av. Campo, 456', '1133344444', 'suporte@agrotools.com', NULL, '22345678000199', 'AgroTools Soluções'),
+(1, 'TecAgro Equipamentos', 'Rua Tratores, 88', '1144455555', 'vendas@tecagro.com', NULL, '32345678000199', 'TecAgro Ltda'),
+(1, 'AgroMais Brasil', 'Rodovia 101', '1155566666', 'contato@agromais.com', NULL, '42345678000199', 'AgroMais Brasil S/A');
 
--- Inserção de máquinas
+-- Populando produtos (8 entradas)
+INSERT INTO produtos (nome, quantidade, valor_uni, descricao, categoria, marca) VALUES
+('Filtro de óleo', 100, 45.90, 'Filtro para tratores pequenos', 'Peças', 'Tracto'),
+('Pneu agrícola', 50, 890.00, 'Pneu para trator médio', 'Rodas', 'Firestone'),
+('Correia dentada', 200, 75.00, 'Correia universal', 'Transmissão', 'Gates'),
+('Bateria 150Ah', 30, 580.00, 'Bateria para tratores grandes', 'Elétrica', 'Moura'),
+('Óleo hidráulico', 300, 120.00, 'Óleo para sistemas hidráulicos', 'Lubrificantes', 'Lubrax'),
+('Embreagem', 20, 1300.00, 'Kit de embreagem completo', 'Transmissão', 'Valtra'),
+('Radiador', 15, 950.00, 'Radiador para motor diesel', 'Refrigeração', 'Case IH'),
+('Filtro de ar', 100, 39.00, 'Filtro de ar para colheitadeira', 'Peças', 'New Holland');
+
+-- Populando maquina (6 entradas)
 INSERT INTO maquina (nome, descricao) VALUES
-('Trator X100', 'Trator agrícola de pequeno porte'),
-('Colheitadeira Z200', 'Ideal para grãos finos'),
-('Plantadeira P300', 'Equipamento para plantio de precisão'),
-('Niveladora F70', 'Correção de terrenos agrícolas');
+('Trator MF 290', 'Trator médio agrícola'),
+('Colheitadeira JD S550', 'Colheitadeira de grãos'),
+('Plantadeira Baldan', 'Equipamento de plantio'),
+('Pulverizador Jacto', 'Pulverizador autopropelido'),
+('Trator Valtra A750', 'Trator compacto'),
+('Colhedora Cana', 'Máquina para corte de cana');
 
--- Inserção de produtos
-INSERT INTO produtos (nome, quantidade, valor, descricao, categoria, marca) VALUES
-('Filtro de Óleo', 50, 30.00, 'Filtro para trator', 'Peça', 'TratorTech'),
-('Correia V', 100, 15.00, 'Correia de borracha', 'Peça', 'AgroPart'),
-('Pneu Agrícola 18.4-30', 20, 1200.00, 'Pneu para colheitadeira', 'Pneu', 'Goodyear'),
-('Sensor de Umidade', 30, 250.00, 'Sensor eletrônico', 'Eletrônico', 'SensAgro'),
-('Bico Pulverizador', 150, 5.00, 'Peça para pulverizador', 'Peça', 'SprayMaster'),
-('Óleo Lubrificante', 80, 60.00, 'Óleo sintético', 'Lubrificante', 'Shell'),
-('Válvula de Pressão', 40, 75.00, 'Válvula de controle', 'Peça', 'HydroControl'),
-('Filtro de Ar', 60, 40.00, 'Filtro para motor', 'Peça', 'TratorTech'),
-('Cilindro Hidráulico', 25, 900.00, 'Cilindro de elevação', 'Hidráulico', 'PowerLift'),
-('Bateria 12V', 35, 300.00, 'Bateria para máquinas', 'Elétrico', 'Bosch');
+-- Populando compra (10 entradas)
+INSERT INTO compra (loc_entrega, valor, dt_emissao, dt_vencimento, dt_entrega, dt_pagamento, id_pessoa) VALUES
+('Centro de Distribuição', 1200.00, '2025-06-01', '2025-06-10', '2025-06-05', '2025-06-10', 5),
+('Fazenda Rio Azul', 850.00, '2025-06-02', '2025-06-12', '2025-06-07', '2025-06-12', 6),
+('Fazenda Boa Vista', 3300.00, '2025-06-03', '2025-06-15', '2025-06-10', '2025-06-15', 7),
+('Armazém Central', 2200.00, '2025-06-04', '2025-06-14', '2025-06-08', '2025-06-14', 8),
+('Oficina do Zé', 670.00, '2025-06-05', '2025-06-13', '2025-06-09', '2025-06-13', 1),
+('Depósito Rural', 950.00, '2025-06-06', '2025-06-16', '2025-06-11', '2025-06-16', 2),
+('Tratores do Sul', 1570.00, '2025-06-07', '2025-06-17', '2025-06-12', '2025-06-17', 3),
+('Auto Peças Sul', 760.00, '2025-06-08', '2025-06-18', '2025-06-13', '2025-06-18', 4),
+('Fazenda Luz Divina', 2000.00, '2025-06-09', '2025-06-19', '2025-06-14', '2025-06-19', 5),
+('Serviços Gerais LTDA', 1110.00, '2025-06-10', '2025-06-20', '2025-06-15', '2025-06-20', 1);
 
--- Inserção de cobranças
-INSERT INTO cobranca (dt_emissao, dt_vencimento, dt_pagamento, status_pag, valor) VALUES
-('2025-07-01', '2025-07-08', '2025-07-07', 1, 120000.00),
-('2025-07-01', '2025-07-10', NULL, 0, 30000.00),
-('2025-07-02', '2025-07-22', '2025-07-20', 1, 2700000.00),
-('2025-07-05', '2025-07-15', '2025-07-10', 1, 180000.00),
-('2025-07-09', '2025-07-19', NULL, 2, 10000.00);
+-- Populando ordemservico (12 entradas)
+INSERT INTO ordemservico (dt_servico, loc_servico, descricao, id_pessoa) VALUES
+('2025-06-01', 'Fazenda Primavera', 'Revisão geral', 1),
+('2025-06-02', 'Fazenda Boa Terra', 'Troca de óleo e filtros', 2),
+('2025-06-03', 'Fazenda Esperança', 'Ajustes na transmissão', 3),
+('2025-06-04', 'Fazenda Paraíso', 'Instalação de faróis', 4),
+('2025-06-05', 'Fazenda Real', 'Troca de embreagem', 5),
+('2025-06-06', 'Fazenda Verde', 'Limpeza de radiador', 6),
+('2025-06-07', 'Fazenda do Vale', 'Substituição de correia', 7),
+('2025-06-08', 'Fazenda Nova Era', 'Verificação elétrica', 8),
+('2025-06-09', 'Fazenda Horizonte', 'Ajuste de sensores', 1),
+('2025-06-10', 'Fazenda Luz Divina', 'Manutenção geral', 2),
+('2025-06-11', 'Fazenda do Sol', 'Inspeção preventiva', 3),
+('2025-06-12', 'Fazenda Boa Fé', 'Reparo em motor', 4);
 
--- Inserção de compras
-INSERT INTO compra (dt_emissao, dt_vencimento, dt_pagamento, loc_entrega, status_pag, valor, id_pessoa) VALUES
-('2025-07-01', '2025-07-10', '2025-07-02', 'Galpão Central', 1, 60000.00, 10),
-('2025-07-03', '2025-07-13', '2025-07-05', 'Portal Belo', 1, 18000.00, 3),
-('2025-07-04', '2025-07-14', '2025-07-14', 'Matriz', 1, 90000.00, 9),
-('2025-07-05', '2025-07-15', NULL, 'Campo Norte', 2, 32000.00, 3),
-('2025-07-07', '2025-07-17', '2025-07-16', 'Filial Sul', 1, 24000.00, 7);
+-- Populando servico (10 entradas)
+INSERT INTO servico (id_ordem_servico, valor, dt_emissao, dt_vencimento, quilometros, horas, dt_pagamento, descricao) VALUES
+(1, 600.00, '2025-06-01', '2025-06-05', 12.0, 2.5, '2025-06-05', 'Revisão básica'),
+(2, 450.00, '2025-06-02', '2025-06-06', 8.0, 1.5, '2025-06-06', 'Troca de óleo e filtros'),
+(3, 900.00, '2025-06-03', '2025-06-07', 15.5, 3.0, '2025-06-07', 'Transmissão'),
+(4, 250.00, '2025-06-04', '2025-06-08', 6.0, 1.0, '2025-06-08', 'Faróis'),
+(5, 1300.00, '2025-06-05', '2025-06-09', 20.0, 4.0, '2025-06-09', 'Embreagem'),
+(6, 380.00, '2025-06-06', '2025-06-10', 10.0, 1.2, '2025-06-10', 'Radiador'),
+(7, 190.00, '2025-06-07', '2025-06-11', 4.5, 0.8, '2025-06-11', 'Correia'),
+(8, 410.00, '2025-06-08', '2025-06-12', 7.0, 1.3, '2025-06-12', 'Elétrica'),
+(9, 220.00, '2025-06-09', '2025-06-13', 5.0, 1.1, '2025-06-13', 'Sensores'),
+(10, 1000.00, '2025-06-10', '2025-06-14', 18.0, 3.5, '2025-06-14', 'Serviço completo');
 
--- Inserção de ordens de serviço
-INSERT INTO ordemservico (dt_ordemservico, local, descricao, id_pessoa) VALUES
-('2025-07-01', 'Sítio São João', 'Revisão completa de trator', 10),
-('2025-07-02', 'Fazenda Boa Vista', 'Troca de peças na colheitadeira', 2),
-('2025-07-03', 'Sítio Maravilha', 'Manutenção corretiva', 3),
-('2025-07-04', 'Fazenda Esperança', 'Verificação elétrica', 9),
-('2025-07-05', 'Chácara Bela Vista', 'Instalação de GPS agrícola', 3),
-('2025-07-06', 'Fazenda Piucco', 'Troca de filtros', 1),
-('2025-07-07', 'Sítio da Vó', 'Lubrificação de implementos', 2),
-('2025-07-08', 'Estância Nova', 'Substituição de correias', 3),
-('2025-07-09', 'Campo Verde', 'Ajuste de sensor de umidade', 7),
-('2025-07-10', 'Fazenda Sul', 'Substituição de baterias', 5);
-
--- Inserção de serviços
-INSERT INTO servico (horas, quilometros, descricao, id_ordemservico, id_cobranca) VALUES
-(2.5, 100.0, 'Troca de óleo e filtros', 1, 1),
-(1.0, 50.0, 'Troca de correias', 2, 3),
-(3.0, 80.5, 'Instalação elétrica', 3, 3),
-(4.0, 200.0, 'Manutenção de motor', 4, 2),
-(2.5, 15.0, 'Instalação de sensor', 5, 1),
-(1.2, 60.0, 'Lubrificação geral', 6, 5),
-(3.3, 120.5, 'Reparo hidráulico', 7, 3),
-(2.0, 90.0, 'Verificação geral', 8, 1),
-(2.7, 104.0, 'Troca de bico', 9, 4),
-(1.8, 70.5, 'Troca de bateria', 10, 4);
-
--- Inserção em consumocompra (combinação entre produtos e compras)
-INSERT INTO consumocompra (quantidade, id_produto, id_compra) VALUES
-(2, 1, 1), (1, 2, 5), (3, 3, 2), (1, 4, 5), (2, 5, 5),
-(4, 6, 3), (1, 7, 2), (2, 8, 1), (2, 9, 5), (1, 10, 4);
-
--- Inserção em consumoservico (combinação entre produtos e serviços)
-INSERT INTO consumoservico (quantidade, id_produto, id_servico) VALUES
-(1, 1, 1), (2, 2, 2), (1, 4, 3), (1, 5, 4), (3, 6, 5),
-(2, 7, 6), (1, 8, 7), (1, 9, 8), (1, 10, 9), (2, 1, 10);
-
--- Inserção em compatibilidade (combinação entre produtos e máquinas)
+-- Populando compatibilidade (8 entradas)
 INSERT INTO compatibilidade (id_produto, id_maquina) VALUES
-(1, 1), (2, 2), (3, 2), (4, 2), (5, 4), (6, 1), (7, 3), (8, 1), (9, 2), (10, 1);
+(1, 1),
+(2, 1),
+(3, 2),
+(4, 2),
+(5, 3),
+(6, 3),
+(7, 4),
+(8, 5);
+
+-- Populando consumocompra (12 entradas)
+INSERT INTO consumocompra (quantidade, id_produto, id_compra) VALUES
+(2, 1, 1),
+(1, 2, 2),
+(3, 3, 3),
+(1, 4, 4),
+(5, 5, 5),
+(1, 6, 6),
+(2, 7, 7),
+(4, 8, 8),
+(1, 2, 9),
+(2, 4, 10),
+(3, 1, 1),
+(1, 5, 2);
+
+-- Populando consumoservico (12 entradas)
+INSERT INTO consumoservico (quantidade, id_produto, id_servico) VALUES
+(1, 1, 1),
+(1, 2, 2),
+(1, 3, 3),
+(1, 4, 4),
+(1, 5, 5),
+(1, 6, 6),
+(1, 7, 7),
+(1, 8, 8),
+(1, 1, 9),
+(1, 2, 10),
+(1, 3, 1),
+(1, 4, 2);

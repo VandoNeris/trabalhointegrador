@@ -25,23 +25,23 @@ async def post_ordemservico(ordemservico: OrdemServico, session: AsyncSession = 
 
     return MensagemResposta(message="OrdemServico criada", id=result)
 
-@router.put("/ordemservico/{id_ordemservico}", response_model=MensagemResposta)
-async def put_ordemservico(id_ordemservico: int, ordemservico: OrdemServico, session: AsyncSession = Depends(get_session)):
-    result = await ordemservico_crud.atualizar_ordemservico(session, ordemservico, id_ordemservico)
+@router.put("/ordemservico/{id_ordem_servico}", response_model=MensagemResposta)
+async def put_ordemservico(id_ordem_servico: int, ordemservico: OrdemServico, session: AsyncSession = Depends(get_session)):
+    result = await ordemservico_crud.atualizar_ordemservico(session, ordemservico, id_ordem_servico)
     if result is None: raise http_exc_pk
     
     return MensagemResposta(message="OrdemServico atualizada", id=result)
 
-@router.delete("/ordemservico/{id_ordemservico}", response_model=MensagemResposta)
-async def delete_ordemservico(id_ordemservico: int, session: AsyncSession = Depends(get_session)):
-    result = await ordemservico_crud.remover_ordemservico(session, id_ordemservico)
+@router.delete("/ordemservico/{id_ordem_servico}", response_model=MensagemResposta)
+async def delete_ordemservico(id_ordem_servico: int, session: AsyncSession = Depends(get_session)):
+    result = await ordemservico_crud.remover_ordemservico(session, id_ordem_servico)
     if result is None: raise http_exc_pk
     
     return MensagemResposta(message="OrdemServico removida", id=result)
 
-@router.get("/ordemservico/{id_ordemservico}", response_model=OrdemServicoGet)
-async def get_ordemservico(id_ordemservico: int, session: AsyncSession = Depends(get_session)):
-    result = await ordemservico_crud.buscar_ordemservico(session, id_ordemservico)
+@router.get("/ordemservico/{id_ordem_servico}", response_model=OrdemServicoGet)
+async def get_ordemservico(id_ordem_servico: int, session: AsyncSession = Depends(get_session)):
+    result = await ordemservico_crud.buscar_ordemservico(session, id_ordem_servico)
     if result is None: raise http_exc_pk
     
     return result

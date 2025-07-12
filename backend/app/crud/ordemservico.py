@@ -16,7 +16,7 @@ async def listar_ordemservicos(session: AsyncSession) -> List[OrdemServicoGet]:
     # Preparando a expressão SQL
     query = text("""
         SELECT
-            id_ordemservico, dt_ordemservico, local, descricao, id_pessoa
+            id_ordem_servico, dt_servico, loc_servico, descricao, id_pessoa
         FROM ordemservico
     """)
     
@@ -45,9 +45,9 @@ async def criar_ordemservico(session: AsyncSession, ordemservico: OrdemServico) 
     # Preparando a expressão SQL
     param = ordemservico.dict()
     query = text("""
-        INSERT INTO ordemservico (dt_ordemservico, local, descricao, id_pessoa)
-        VALUES (:dt_ordemservico, :local, :descricao, :id_pessoa)
-        RETURNING id_ordemservico
+        INSERT INTO ordemservico (dt_servico, loc_servico, descricao, id_pessoa)
+        VALUES (:dt_servico, :loc_servico, :descricao, :id_pessoa)
+        RETURNING id_ordem_servico
     """)
 
     # Protegendo de excessões
@@ -60,13 +60,13 @@ async def criar_ordemservico(session: AsyncSession, ordemservico: OrdemServico) 
         await session.rollback()               # Reverte a transação em caso de erro
         raise e
 
-async def atualizar_ordemservico(session: AsyncSession, ordemservico: OrdemServico, id_ordemservico: int) -> Optional[int]:
+async def atualizar_ordemservico(session: AsyncSession, ordemservico: OrdemServico, id_ordem_servico: int) -> Optional[int]:
     """
     Atualiza os dados de uma ordemservico existente com base no ID informado.
     Args:
         session (AsyncSession): Sessão ativa com o banco de dados.
         ordemservico (OrdemServico): Objeto contendo os novos dados da ordemservico.
-        id_ordemservico (int): ID da ordemservico a ser atualizada.
+        id_ordem_servico (int): ID da ordemservico a ser atualizada.
     Returns:
         Optional[int]: ID da ordemservico atualizada, ou None em caso de falha.
     Raises:
@@ -78,13 +78,13 @@ async def atualizar_ordemservico(session: AsyncSession, ordemservico: OrdemServi
     
     # Preparando a expressão SQL
     param = ordemservico.dict()
-    param.update({"id_ordemservico": id_ordemservico})
+    param.update({"id_ordem_servico": id_ordem_servico})
     query = text("""
         UPDATE ordemservico
         SET 
-            dt_ordemservico=:dt_ordemservico, local=:local, descricao=:descricao, id_pessoa=:id_pessoa
-        WHERE id_ordemservico=:id_ordemservico
-        RETURNING id_ordemservico
+            dt_servico=:dt_servico, loc_servico=:loc_servico, descricao=:descricao, id_pessoa=:id_pessoa
+        WHERE id_ordem_servico=:id_ordem_servico
+        RETURNING id_ordem_servico
     """)
 
     # Protegendo de excessões
@@ -97,12 +97,12 @@ async def atualizar_ordemservico(session: AsyncSession, ordemservico: OrdemServi
         await session.rollback()               # Reverte a transação em caso de erro
         raise e
 
-async def remover_ordemservico(session: AsyncSession, id_ordemservico: int) -> Optional[int]:
+async def remover_ordemservico(session: AsyncSession, id_ordem_servico: int) -> Optional[int]:
     """
     Remove uma ordemservico da tabela `ordemservico` com base no ID informado.
     Args:
         session (AsyncSession): Sessão ativa com o banco de dados.
-        id_ordemservico (int): ID da ordemservico a ser removida.
+        id_ordem_servico (int): ID da ordemservico a ser removida.
     Returns:
         Optional[int]: ID da ordemservico removida, ou None caso não exista.
     Raises:
@@ -110,39 +110,39 @@ async def remover_ordemservico(session: AsyncSession, id_ordemservico: int) -> O
     """
     # Preparando a expressão SQL
     query = text("""
-        DELETE FROM ordemservico WHERE id_ordemservico=:id_ordemservico RETURNING id_ordemservico
+        DELETE FROM ordemservico WHERE id_ordem_servico=:id_ordem_servico RETURNING id_ordem_servico
     """)
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, {"id_ordemservico": id_ordemservico}))
+        result = (await session.execute(query, {"id_ordem_servico": id_ordem_servico}))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
         await session.rollback()               # Reverte a transação em caso de erro
         raise e
 
-async def buscar_ordemservico(session: AsyncSession, id_ordemservico: int) -> Optional[OrdemServicoGet]:
+async def buscar_ordemservico(session: AsyncSession, id_ordem_servico: int) -> Optional[OrdemServicoGet]:
     """
     Busca uma ordemservico pelo ID na tabela `ordemservico`.
     Args:
         session (AsyncSession): Sessão ativa com o banco de dados.
-        id_ordemservico (int): ID da ordemservico a ser consultada.
+        id_ordem_servico (int): ID da ordemservico a ser consultada.
     Returns:
         Optional[OrdemServicoGet]: Objeto contendo os dados da ordemservico, ou None se não encontrada.
     """
     # Preparando a expressão SQL
     query = text("""
         SELECT 
-            id_ordemservico, dt_ordemservico, local, descricao, id_pessoa
+            id_ordem_servico, dt_servico, loc_servico, descricao, id_pessoa
         FROM ordemservico
-        WHERE id_ordemservico=:id_ordemservico
+        WHERE id_ordem_servico=:id_ordem_servico
         LIMIT 1
     """)
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query, {"id_ordemservico": id_ordemservico})).mappings().fetchone()
+    result = (await session.execute(query, {"id_ordem_servico": id_ordem_servico})).mappings().fetchone()
 
     # Retornando OrdemServicoGet
     return None if result is None else OrdemServicoGet(**result)

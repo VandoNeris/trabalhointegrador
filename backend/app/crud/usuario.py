@@ -15,7 +15,7 @@ async def listar_usuarios(session: AsyncSession) -> List[UsuarioGet]:
     # Preparando a expressão SQL
     query = text("""
         SELECT
-            id_usuario, senha, tipo
+            id_usuario, nome, senha, tipo
         FROM usuario
     """)
     
@@ -39,8 +39,8 @@ async def criar_usuario(session: AsyncSession, usuario: Usuario) -> Optional[int
     # Preparando a expressão SQL
     param = usuario.dict()
     query = text("""
-        INSERT INTO usuario (senha, tipo)
-        VALUES (:senha, :tipo)
+        INSERT INTO usuario (nome, senha, tipo)
+        VALUES (:nome, :senha, :tipo)
         RETURNING id_usuario
     """)
 
@@ -72,8 +72,8 @@ async def atualizar_usuario(session: AsyncSession, usuario: Usuario, id_usuario:
     query = text("""
         UPDATE usuario
         SET 
-            senha=:senha, tipo=:tipo
-        WHERE id_usuario = :id_usuario
+            nome=:nome, senha=:senha, tipo=:tipo
+        WHERE id_usuario=:id_usuario
         RETURNING id_usuario
     """)
 
@@ -100,7 +100,7 @@ async def remover_usuario(session: AsyncSession, id_usuario: int) -> Optional[in
     """
     # Preparando a expressão SQL
     query = text("""
-        DELETE FROM usuario WHERE id_usuario = :id_usuario RETURNING id_usuario
+        DELETE FROM usuario WHERE id_usuario=:id_usuario RETURNING id_usuario
     """)
 
     # Protegendo de excessões
@@ -125,9 +125,9 @@ async def buscar_usuario(session: AsyncSession, id_usuario: int) -> Optional[Usu
     # Preparando a expressão SQL
     query = text("""
         SELECT 
-            id_usuario, senha, tipo
+            id_usuario, nome, senha, tipo
         FROM usuario
-        WHERE id_usuario = :id_usuario
+        WHERE id_usuario=:id_usuario
         LIMIT 1
     """)
     
