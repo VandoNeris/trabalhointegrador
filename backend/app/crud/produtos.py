@@ -1,3 +1,11 @@
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import text
+from typing import Optional, List
+from backend.app.schemas.produtos import Produto, ProdutoGet
+from backend.app.crud import produtos as produto_crud
+
+
 async def listar_produtos(session: AsyncSession) -> List[produto_crud.ProdutoGet]:
     """
     Retorna uma lista de todos os produtos cadastrados no banco de dados.
