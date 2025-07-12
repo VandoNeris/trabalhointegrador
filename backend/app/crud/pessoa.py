@@ -16,7 +16,7 @@ async def listar_pessoas(session: AsyncSession) -> List[PessoaGet]:
     query = text("""
         SELECT
             id_pessoa, tipo, nome, endereco, email, telefone, cpf, cnpj, razaosocial
-        FROM pessoa
+        FROM pessoa 
     """)
     
     # Executando a query e salvando o resultado
@@ -24,6 +24,33 @@ async def listar_pessoas(session: AsyncSession) -> List[PessoaGet]:
     
     # Retornando lista de PessoaGet
     return [ PessoaGet(**row) for row in result ]
+
+async def listar_pessoas_por_tipo(session: AsyncSession, tipo: int) -> List[PessoaGet]:
+    """
+    Retorna uma lista de pessoas de um tipo específico.
+
+    Args:
+        session (AsyncSession): Sessão ativa com o banco de dados.
+        tipo (int): O tipo de pessoa a ser filtrado (0 para física, 1 para jurídica).
+
+    Returns:
+        List[PessoaGet]: Lista de objetos PessoaGet contendo os dados de cada pessoa encontrada.
+    """
+    # 1. Preparando a expressão SQL com um parâmetro de vinculação (:tipo_filtro)
+    query = text("""
+        SELECT
+            id_pessoa, tipo, nome, endereco, email, telefone, cpf, cnpj, razaosocial
+        FROM pessoa
+        WHERE tipo = :tipo_filtro 
+    """)
+    
+    # 2. Executando a query, passando o valor do filtro no segundo argumento
+    result = (
+        await session.execute(query, {"tipo_filtro": tipo})
+    ).mappings().all()
+    
+    # 3. Retornando a lista de PessoaGet (mesma lógica da função anterior)
+    return [PessoaGet(**row) for row in result]
 
 async def criar_pessoa(session: AsyncSession, pessoa: Pessoa) -> Optional[int]:
     """

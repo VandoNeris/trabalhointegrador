@@ -3,15 +3,15 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const API_URL = "http://localhost:8000"; 
 
-const tipoPessoaFisica=0;
+const tipoPessoaJuridica=1;
 
-export function usePessoas() {
+export function useEmpresas() {
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ["pessoas", tipoPessoaFisica],
+    queryKey: ["pessoas"],
     queryFn: async () => {
-      const res = await fetch(`${API_URL}/pessoas/${tipoPessoaFisica}`);
+      const res = await fetch(`${API_URL}/pessoas/${tipoPessoaJuridica}`);
       const data = await res.json();
       return data;
     }
@@ -47,8 +47,8 @@ export function usePessoas() {
 
   return {
     ...query,
-    addPessoa: addMutation.mutateAsync,
-    removePessoa: deleteMutation.mutateAsync,
+    addEmpresa: addMutation.mutateAsync,
+    removeEmpresa: deleteMutation.mutateAsync,
     isSaving: addMutation.isPending,
     isDeleting: deleteMutation.isPending,
   };

@@ -43,3 +43,9 @@ async def get_pessoa(id_pessoa: int, session: AsyncSession = Depends(get_session
     if result is None: raise http_exc_pk
     
     return result
+
+@router.get("/pessoas/{tipo}", response_model=List[PessoaGet])
+async def get_pessoas(tipo:int,session: AsyncSession = Depends(get_session)):
+    result = await pessoa_crud.listar_pessoas_por_tipo(session, tipo)
+
+    return result

@@ -11,6 +11,7 @@ import EstoquePage from "./pages/EstoquePage";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import PessoaPage from "./pages/PessoaPage";
+import EmpresaPage from "./pages/EmpresaPage";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,14 @@ const App = () => (
             element={
               <AppLayout>
                 <PessoaPage />
+              </AppLayout>
+            }
+          />
+          <Route
+            path="/empresa"
+            element={
+              <AppLayout>
+                <EmpresaPage />
               </AppLayout>
             }
           />
