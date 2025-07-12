@@ -18,21 +18,22 @@ class Pessoa(BaseModel):
     tipo: TipoPessoa
     nome: Annotated[ str, StringConstraints(min_length=1, max_length=60) ]
     endereco: Annotated[ str, StringConstraints(min_length=1, max_length=100) ]
-    email: EmailStr
     telefone: Annotated[ str, StringConstraints(min_length=1, max_length=13) ]
+    email: Optional[ EmailStr ] = None
     cpf: Optional[ Annotated[ str, StringConstraints(min_length=1, max_length=11) ] ] = None
     cnpj: Optional[ Annotated[ str, StringConstraints(min_length=1, max_length=14) ] ] = None
-    razaosocial: Optional[ Annotated[ str, StringConstraints(min_length=1, max_length=60) ] ] = None
+    razao_social: Optional[ Annotated[ str, StringConstraints(min_length=1, max_length=60) ] ] = None
     
     @model_validator(mode='after')
     @classmethod
     def checar_documentos(cls, model):
-        if model.cpf and model.cnpj:
+        if model.cpf is not None and model.cnpj is not None:
             raise ValueError('Uma pessoa não pode ter CPF e CNPJ simultaneamente')
-        if model.tipo == TipoPessoa.FISICA and not model.cpf:
-            raise ValueError('CPF obrigatório para pessoa física')
-        if model.tipo == TipoPessoa.JURIDICA and not model.cnpj:
-            raise ValueError('CNPJ obrigatório para pessoa jurídica')
+        else:
+            if model.tipo == TipoPessoa.FISICA and model.cpf is None:
+                raise ValueError('CPF obrigatório para pessoa física')
+            if model.tipo == TipoPessoa.JURIDICA and model.cnpj is None:
+                raise ValueError('CNPJ obrigatório para pessoa jurídica')
         return model
     
 class PessoaGet(Pessoa):

@@ -2,6 +2,7 @@
 
 usuario (
     <u>codusuario</u>,
+    nome,
     senha,
     tipo
 )
@@ -11,20 +12,21 @@ pessoa (
     tipo, 
     nome, 
     endereco, 
-    email, 
     telefone,
+    <u style="text-decoration: underline dashed;">email</u>, 
     <u style="text-decoration: underline dashed;">cpf*</u>,
     <u style="text-decoration: underline dashed;">cnpj*</u>,
     <u style="text-decoration: underline dashed;">razaosocial</u>
 )
 
-cobranca (
-    <u>codcobranca</u>,
-    dtemissao,
-    dtvencimento,
-    <u style="text-decoration: underline dashed;">dtpagamento</u>,
-    statuspag,
-    valor
+produtos (
+    <u>codproduto</u>,
+    nome,
+    quantidade,
+    valoruni,
+    <u style="text-decoration: underline dashed;">descricao</u>,
+    <u style="text-decoration: underline dashed;">categoria</u>,
+    <u style="text-decoration: underline dashed;">marca</u>
 )
 
 maquina (
@@ -35,40 +37,33 @@ maquina (
 
 compra (
     <u>codcompra</u>,
+    codpessoa(pessoa),                                                     <!-- AtribuicaoCompra (1:N) -->
+    locentrega,
+    valor,
     dtemissao,
     dtvencimento,
-    <u style="text-decoration: underline dashed;">dtpagamento</u>,
-    locentrega,
-    statuspag,
-    valor,
-    codpessoa(pessoa)                                                       <!-- AtribuicaoCompra (1:N) -->
+    <u style="text-decoration: underline dashed;">dtentrega</u>,
+    <u style="text-decoration: underline dashed;">dtpagamento</u>
 )
 
-ordemserv (
-    <u>codos</u>,
-    data,
-    local,
-    <u style="text-decoration: underline dashed;">descricao</u>,
-    codpessoa(pessoa)                                                       <!-- AtribuicaoServico (1:N) -->
+ordemservico (
+    <u>codordemservico</u>,
+    codpessoa(pessoa),                                                     <!-- AtribuicaoServico (1:N) -->
+    dtservico,
+    locservico,
+    <u style="text-decoration: underline dashed;">descricao</u>
 )
 
 servico (
     <u>codservico</u>,
-    horas,
-    quilometros,
-    <u style="text-decoration: underline dashed;">descricao</u>,
-    codordemserv(ordemserv),                                                <!-- Execução (1:N) -->
-    <u style="text-decoration: underline dashed;">codcobranca(cobranca)</u> <!-- Gera (1:N) -->
-)
-
-produtos (
-    <u>codproduto</u>,
-    nome,
-    quantidade,
+    codordemservico(ordemservico)*,                                       <!-- Execucao (1:1) -->
     valor,
-    <u style="text-decoration: underline dashed;">descricao</u>,
-    categoria,
-    marca
+    dtemissao,
+    dtvencimento,
+    quilometros,
+    horas,
+    <u style="text-decoration: underline dashed;">dtpagamento</u>,
+    <u style="text-decoration: underline dashed;">descricao</u>
 )
 
 compatibilidade (                                                           <!-- Compatibilidade (N:N) -->
@@ -91,7 +86,7 @@ consumoservico (                                                            <!--
     codservico(servico)
 )
 
-### [Modelo Lógico Relacional - Tractomaq](https://dbdiagram.io/d/Tractomaq-6862e705f413ba350896d9cf)
+### [Modelo Lógico Relacional - Tractomaq](https://dbdiagram.io/d/Traqtomac-6862e705f413ba350896d9cf)
 
 ```
 Project project_name {
@@ -100,8 +95,9 @@ Project project_name {
 }
 
 Table usuario {
-    id_usuario varchar(60) [pk]
-    senha varchar(60) [not null]
+    id_usuario integer [pk, increment]
+    nome varchar(60) [unique, not null]
+    senha varchar(255) [not null]
     tipo smallint [not null, note:'0-Administrador\n1-Regular']
 }
 
@@ -110,20 +106,21 @@ Table pessoa {
     tipo smallint [not null, note:'0-Fisica\n1-Juridica']
     nome varchar(60) [not null]
     endereco varchar(100) [not null]
-    email varchar(60) [not null]
     telefone varchar(13) [not null]
+    email varchar(60)
     cpf varchar(11) [unique]
     cnpj varchar(14) [unique]
-    razaosocial varchar(60)
+    razao_social varchar(60)
 }
 
-Table cobranca {
-    id_cobranca integer [pk, increment]
-    dt_emissao date [not null]
-    dt_vencimento date [not null]
-    dt_pagamento date
-    statuspag smallint [not null, note:'0-Pendente\n1-Paga\n2-Vencida']
-    valor numeric(12,2) [not null]
+Table produtos {
+    id_produto integer [pk, increment]
+    nome varchar(60) [not null]
+    quantidade integer [not null]
+    valor_uni numeric(12,2) [not null]
+    descricao text
+    categoria varchar(60)
+    marca varchar(60)
 }
 
 Table maquina {
@@ -134,45 +131,37 @@ Table maquina {
 
 Table compra {
     id_compra integer [pk, increment]
+    loc_entrega varchar(100) [not null]
+    valor numeric(12,2) [not null]
     dt_emissao date [not null]
     dt_vencimento date [not null]
+    dt_entrega date
     dt_pagamento date
-    loc_entrega varchar(100) [not null]
-    statuspag smallint [not null, note:'0-Pendente\n1-Paga\n2-Vencida']
-    valor numeric(12,2) [not null]
     id_pessoa integer [not null]            // AtribuicaoCompra (1:N)
 }
 Ref registracompra: compra.id_pessoa > pessoa.id_pessoa
 
 Table ordemservico {
-    id_ordemservico integer [pk, increment]
-    dt_ordemservico date [not null]
-    local varchar(100) [not null]
+    id_ordem_servico integer [pk, increment]
+    dt_servico date [not null]
+    loc_servico varchar(100) [not null]
     descricao text
     id_pessoa integer [not null]            // AtribuicaoServico (1:N)
 }
-Ref registraordemservico: ordemservico.id_pessoa > pessoa.id_pessoa
+Ref atribuicaoservico: ordemservico.id_pessoa > pessoa.id_pessoa
 
 Table servico {
     id_servico integer [pk, increment]
-    horas numeric(5,2) [not null]
-    quilometros numeric(6, 2) [not null]
-    descricao text
-    id_ordemservico integer [not null]                // Execução (1:N)
-    id_cobranca integer                     // Gera (1:N)
-}
-Ref execução: servico.id_ordemservico > ordemservico.id_ordemservico
-Ref gera: servico.id_cobranca > cobranca.id_cobranca
-
-Table produtos {
-    id_produto integer [pk, increment]
-    nome varchar(60) [not null]
-    quantidade integer [not null]
+    id_ordem_servico integer [unique]       // Execucao (1:1)
     valor numeric(12,2) [not null]
+    dt_emissao date [not null]
+    dt_vencimento date [not null]
+    quilometros numeric(6, 2) [not null]
+    horas numeric(5,2) [not null]
+    dt_pagamento date
     descricao text
-    categoria varchar(60) [not null]
-    marca varchar(60) [not null]
 }
+Ref execução: servico.id_ordem_servico - ordemservico.id_ordem_servico
 
 Table compatibilidade {                     // Compatibilidade (N:N)
     id_compatibilidade integer [pk, increment]
@@ -183,7 +172,7 @@ Ref compatibilidade: compatibilidade.id_produto <> produtos.id_produto
 Ref compatibilidade: compatibilidade.id_maquina <> maquina.id_maquina
 
 Table consumocompra {                       // ConsumoCompra (N:N)
-    id_consumocompra integer [pk, increment]
+    id_consumo_compra integer [pk, increment]
     quantidade integer [not null]
     id_produto integer [not null]
     id_compra integer [not null]
@@ -192,7 +181,7 @@ Ref consumocompra: consumocompra.id_produto <> produtos.id_produto
 Ref consumocompra: consumocompra.id_compra <> compra.id_compra
 
 Table consumoservico {                      // ConsumoServico (N:N)
-    id_consumoservico integer [pk, increment]
+    id_consumo_servico integer [pk, increment]
     quantidade integer [not null]
     id_produto integer [not null]
     id_servico integer [not null]

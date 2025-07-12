@@ -1,28 +1,14 @@
 from pydantic import BaseModel, model_validator, StringConstraints, Field
 from typing import Optional, Annotated
 import datetime as dt
-from enum import IntEnum
-
-class StatusPag(IntEnum):
-    PENDENTE = 0
-    PAGO = 1
-    VENCIDO = 2
-    
-    def __str__(self):
-        return self.name.capitalize()
-    
-    @classmethod
-    def choices(cls):
-        return [(member.value, member.name.capitalize()) for member in cls]
 
 class Compra(BaseModel):
+    loc_entrega: Annotated[ str, StringConstraints(min_length=1, max_length=100) ]
+    valor: Annotated[ float, Field(gt=0, lt=10**8) ]
     dt_emissao: dt.date
     dt_vencimento: dt.date
+    dt_entrega: Optional[ dt.date ] = None
     dt_pagamento: Optional[ dt.date ] = None
-    status_pag: StatusPag
-    valor: Annotated[ float, Field(gt=0, lt=10**9) ]
-    loc_entrega: Annotated[ str, StringConstraints(min_length=1, max_length=100) ]
-    id_pessoa: Annotated[ int, Field(gt=0) ]
     id_pessoa: Annotated[ int, Field(gt=0) ]
 
     @model_validator(mode='after')
@@ -31,15 +17,10 @@ class Compra(BaseModel):
         # Validação entre datas
         if model.dt_vencimento < model.dt_emissao:
             raise ValueError('Data de vencimento não pode ser anterior à data de emissão')
-        if model.dt_pagamento and model.dt_pagamento < model.dt_emissao:
+        if model.dt_pagamento is not None and model.dt_pagamento < model.dt_emissao:
             raise ValueError('Data de pagamento não pode ser anterior à data de emissão')
-        
-        # Validação de acordo com status de pagamento
-        if model.status_pag == StatusPag.PAGO:
-            if model.dt_pagamento is None:
-                raise ValueError('Data de pagamento deve ser informada se o status for Pago')
-        elif model.dt_pagamento is not None:
-            raise ValueError('Data de pagamento não deve ser informada se o status for Pendente ou Vencido')
+        if model.dt_entrega is not None and model.dt_entrega < model.dt_emissao:
+            raise ValueError('Data de entrega não pode ser anterior à data de emissão')
         
         return model
     

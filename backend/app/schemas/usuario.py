@@ -15,8 +15,9 @@ class TipoUsuario(IntEnum):
         return [ (member.value, member.name.capitalize()) for member in cls ]
 
 class Usuario(BaseModel):
-    senha: Annotated[ str, StringConstraints(min_length=1, max_length=60) ]
+    nome: Annotated[ str, StringConstraints(min_length=1, max_length=60) ]
+    senha: Annotated[ str, StringConstraints(min_length=6, max_length=255) ]
     tipo: TipoUsuario
 
 class UsuarioGet(Usuario):
-    id_usuario: Annotated[ str, StringConstraints(min_length=1, max_length=60) ]
+    id_usuario: Annotated[ int, Field(gt=0) ]

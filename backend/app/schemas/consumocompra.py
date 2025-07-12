@@ -8,4 +8,4 @@ class ConsumoCompra(BaseModel):
     id_compra: Annotated[ int, Field(gt=0) ]
 
 class ConsumoCompraGet(ConsumoCompra):
-    id_consumocompra: Annotated[ int, Field(gt=0) ]
+    id_consumo_compra: Annotated[ int, Field(gt=0) ]
