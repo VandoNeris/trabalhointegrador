@@ -3,6 +3,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import text
 from typing import Optional, List
 from backend.app.schemas.usuario import Usuario, UsuarioGet
+from backend.app.core.security import hash_password 
 
 async def listar_usuarios(session: AsyncSession) -> List[UsuarioGet]:
     """
@@ -13,6 +14,7 @@ async def listar_usuarios(session: AsyncSession) -> List[UsuarioGet]:
         List[UsuarioGet]: Lista de objetos do tipo UsuarioGet contendo os dados de cada usuario.
     """
     # Preparando a expressão SQL
+    
     query = text("""
         SELECT
             id_usuario, nome, senha, tipo
@@ -37,10 +39,13 @@ async def criar_usuario(session: AsyncSession, usuario: Usuario) -> Optional[int
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
     # Preparando a expressão SQL
+    usuario.senha = hash_password(usuario.senha)
+
     param = usuario.dict()
+    print(param)
     query = text("""
         INSERT INTO usuario (nome, senha, tipo)
-        VALUES (:nome, :senha, :tipo)
+        VALUES (:nome, :senha, 0)
         RETURNING id_usuario
     """)
 
@@ -133,6 +138,30 @@ async def buscar_usuario(session: AsyncSession, id_usuario: int) -> Optional[Usu
     
     # Executando a query e salvando o resultado
     result = (await session.execute(query, {"id_usuario": id_usuario})).mappings().fetchone()
+
+    # Retornando UsuarioGet
+    return None if result is None else UsuarioGet(**result)
+
+async def buscar_usuario_por_nome(session: AsyncSession, nome: int) -> Optional[UsuarioGet]:
+    """
+    Busca uma usuario pelo nome na tabela `usuario`.
+    Args:
+        session (AsyncSession): Sessão ativa com o banco de dados.
+        nome (str): nome do usuario a ser consultada.
+    Returns:
+        Optional[UsuarioGet]: Objeto contendo os dados da usuario, ou None se não encontrada.
+    """
+    # Preparando a expressão SQL
+    query = text("""
+        SELECT 
+            nome
+        FROM usuario
+        WHERE nome=:nome
+        LIMIT 1
+    """)
+    
+    # Executando a query e salvando o resultado
+    result = (await session.execute(query, {"nome": nome})).mappings().fetchone()
 
     # Retornando UsuarioGet
     return None if result is None else UsuarioGet(**result)

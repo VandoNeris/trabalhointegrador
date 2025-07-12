@@ -12,6 +12,8 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import PessoaPage from "./pages/PessoaPage";
 import EmpresaPage from "./pages/EmpresaPage";
+import LoginPage from "./pages/LoginPage";
+import CadastroPage from "./pages/CadastroPage";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +32,18 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route
+            path="/login"
+            element={
+                <LoginPage />
+            }
+          />
+          <Route
+            path="/cadastro"
+            element={
+                <CadastroPage />
+            }
+          />
           <Route
             path="/cobranca"
             element={

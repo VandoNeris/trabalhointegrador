@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { usePessoas } from "@/hooks/usePessoas";
@@ -124,6 +124,9 @@ export default function PessoaPage() {
                   <td className="py-2">{pessoa.email}</td>
                   <td className="py-2">{pessoa.telefone}</td>
                   <td className="py-2">{pessoa.cpf}</td>
+                  <td className="py-2 flex gap-2 justify-center items-center">
+                    <button title="Excluir" className="hover:text-[#891B14] p-1"><Trash2 size={18}/></button>
+                  </td>
                 </tr>
               ))}
             </tbody>
