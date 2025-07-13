@@ -4,6 +4,9 @@ from backend.database import get_session
 from backend.app.schemas.pessoa import Pessoa, PessoaGet
 from backend.app.schemas.MensagemResposta import MensagemResposta
 from backend.app.crud import pessoa as pessoa_crud
+from backend.app.crud.usuario import get_current_user, get_administrator_user
+from backend.app.schemas.usuario import Usuario
+
 from typing import List
 
 router = APIRouter()
@@ -15,6 +18,7 @@ http_exc_pk = HTTPException(status_code=404, detail="Pessoa com o ID informado n
 async def get_pessoas(session: AsyncSession = Depends(get_session)):
     result = await pessoa_crud.listar_pessoas(session)
 
+    
     return result
 
 @router.post("/pessoa", response_model=MensagemResposta, status_code=status.HTTP_201_CREATED)
@@ -45,7 +49,13 @@ async def get_pessoa(id_pessoa: int, session: AsyncSession = Depends(get_session
     return result
 
 @router.get("/pessoas/{tipo}", response_model=List[PessoaGet])
-async def get_pessoas(tipo:int,session: AsyncSession = Depends(get_session)):
+async def get_pessoas(tipo:int, session: AsyncSession = Depends(get_session), current_user: Usuario = Depends(get_current_user)):
     result = await pessoa_crud.listar_pessoas_por_tipo(session, tipo)
+
+    return result
+
+@router.get("/dashboard/users/type")
+async def get_pessoas_type(session: AsyncSession = Depends(get_session), current_user: Usuario = Depends(get_administrator_user)):
+    result = await pessoa_crud.get_totais_por_tipo(session)
 
     return result

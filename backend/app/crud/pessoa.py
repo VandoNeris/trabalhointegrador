@@ -25,6 +25,26 @@ async def listar_pessoas(session: AsyncSession) -> List[PessoaGet]:
     # Retornando lista de PessoaGet
     return [ PessoaGet(**row) for row in result ]
 
+
+
+async def get_totais_por_tipo(session: AsyncSession):
+    query = text("""
+        SELECT 
+            COUNT(*) AS value, 
+            CASE
+                WHEN tipo = 0 THEN 'Administrador'
+                WHEN tipo = 1 THEN 'Regular'
+                ELSE 'Desconhecido'
+            END AS name 
+        FROM usuario
+        GROUP BY tipo; 
+    """)
+
+    result = (await session.execute(query)).mappings().all()
+        
+    return result
+
+
 async def listar_pessoas_por_tipo(session: AsyncSession, tipo: int) -> List[PessoaGet]:
     """
     Retorna uma lista de pessoas de um tipo específico.

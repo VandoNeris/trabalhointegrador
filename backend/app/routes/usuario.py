@@ -8,7 +8,7 @@ from typing import List
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 
-from core.security import verify_password, create_access_token
+from backend.app.core.security import verify_password, create_access_token
 
 router = APIRouter()
 
@@ -29,18 +29,19 @@ async def login_for_access_token(
 ):
 
     usuario = await usuario_crud.buscar_usuario_por_nome(session, form_data.username)
-    
-    if not usuario or not verify_password(form_data.password, usuario.senha_hashed):
+
+    if not usuario or not verify_password(form_data.password, usuario.senha):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuário ou senha incorretos",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     access_token = create_access_token(
-        data={"sub": usuario.nome_usuario}  # "sub" é o sujeito do token
+        data={"sub": usuario.nome, 
+              "tipo": usuario.tipo}  # "sub" é o sujeito do token
     )
-    
+
     return {"access_token": access_token, "token_type": "bearer"}
 
 # @router.get("/usuarios", response_model=List[UsuarioGet])
@@ -49,11 +50,11 @@ async def login_for_access_token(
 
 #     return result
 
-# @router.post("/usuario", response_model=MensagemResposta, status_code=status.HTTP_201_CREATED)
-# async def post_usuario(usuario: Usuario, session: AsyncSession = Depends(get_session)):
-#     result = await usuario_crud.criar_usuario(session, usuario)
+@router.post("/usuario", response_model=MensagemResposta, status_code=status.HTTP_201_CREATED)
+async def post_usuario(usuario: Usuario, session: AsyncSession = Depends(get_session)):
+    result = await usuario_crud.criar_usuario(session, usuario)
 
-#     return MensagemResposta(message="Usuario criada", id=result)
+    return MensagemResposta(message="Usuario criada", id=result)
 
 # @router.put("/usuario/{id_usuario}", response_model=MensagemResposta)
 # async def put_usuario(id_usuario: int, usuario: Usuario, session: AsyncSession = Depends(get_session)):
