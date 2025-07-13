@@ -26,10 +26,11 @@ async def login_for_access_token(form_data: Annotated[ OAuth2PasswordRequestForm
     if not usuario or not verify_password(form_data.password, usuario.senha):
         raise http_exc_unauthn
 
-    access_token_expires = dt.timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": usuario.nome, "tipo": usuario.tipo},
-        expires_delta=access_token_expires
+        data={
+            "sub": usuario.nome, 
+            "tipo": usuario.tipo
+        }
     )
 
     return Token(access_token=access_token, token_type="bearer")

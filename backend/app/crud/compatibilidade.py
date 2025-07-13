@@ -14,14 +14,14 @@ async def listar_compatibilidades(session: AsyncSession) -> List[Compatibilidade
         List[CompatibilidadeGet]: Lista de objetos do tipo CompatibilidadeGet contendo os dados de cada compatibilidade.
     """
     # Preparando a expressão SQL
-    query = text("""
+    query = """
         SELECT
             id_compatibilidade, id_produto, id_maquina
         FROM compatibilidade
-    """)
+    """
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query)).mappings().all()
+    result = (await session.execute(text(query))).mappings().all()
     if result is None: return list()
     
     # Retornando lista de CompatibilidadeGet
@@ -46,16 +46,16 @@ async def criar_compatibilidade(session: AsyncSession, compatibilidade: Compatib
     
     # Preparando a expressão SQL
     param = compatibilidade.model_dump()
-    query = text("""
+    query = """
         INSERT INTO compatibilidade (id_produto, id_maquina)
         VALUES (:id_produto, :id_maquina)
         RETURNING id_compatibilidade
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -83,18 +83,18 @@ async def atualizar_compatibilidade(session: AsyncSession, compatibilidade: Comp
     # Preparando a expressão SQL
     param = compatibilidade.model_dump()
     param.update({"id_compatibilidade": id_compatibilidade})
-    query = text("""
+    query = """
         UPDATE compatibilidade
         SET 
             id_produto=:id_produto, id_maquina=:id_maquina
         WHERE id_compatibilidade=:id_compatibilidade
         RETURNING id_compatibilidade
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -114,14 +114,14 @@ async def remover_compatibilidade(session: AsyncSession, id_compatibilidade: int
     """
     # Preparando a expressão SQL
     param = {"id_compatibilidade": id_compatibilidade}
-    query = text("""
+    query = """
         DELETE FROM compatibilidade WHERE id_compatibilidade=:id_compatibilidade RETURNING id_compatibilidade
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -139,16 +139,16 @@ async def buscar_compatibilidade(session: AsyncSession, id_compatibilidade: int)
     """
     # Preparando a expressão SQL
     param = {"id_compatibilidade": id_compatibilidade}
-    query = text("""
+    query = """
         SELECT 
             id_compatibilidade, id_produto, id_maquina
         FROM compatibilidade
         WHERE id_compatibilidade=:id_compatibilidade
         LIMIT 1
-    """)
+    """
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query, param)).mappings().fetchone()
+    result = (await session.execute(text(query), param)).mappings().fetchone()
 
     # Retornando CompatibilidadeGet
     return None if result is None else CompatibilidadeGet(**result)

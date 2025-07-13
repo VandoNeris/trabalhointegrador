@@ -14,14 +14,14 @@ async def listar_ordemservicos(session: AsyncSession) -> List[OrdemServicoGet]:
         List[OrdemServicoGet]: Lista de objetos do tipo OrdemServicoGet contendo os dados de cada ordemservico.
     """
     # Preparando a expressão SQL
-    query = text("""
+    query = """
         SELECT
             id_ordem_servico, dt_servico, loc_servico, descricao, id_pessoa
         FROM ordemservico
-    """)
+    """
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query)).mappings().all()
+    result = (await session.execute(text(query))).mappings().all()
     if result is None: return list()
         
     # Retornando lista de OrdemServicoGet
@@ -44,16 +44,16 @@ async def criar_ordemservico(session: AsyncSession, ordemservico: OrdemServico) 
     
     # Preparando a expressão SQL
     param = ordemservico.model_dump()
-    query = text("""
+    query = """
         INSERT INTO ordemservico (dt_servico, loc_servico, descricao, id_pessoa)
         VALUES (:dt_servico, :loc_servico, :descricao, :id_pessoa)
         RETURNING id_ordem_servico
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -79,18 +79,18 @@ async def atualizar_ordemservico(session: AsyncSession, ordemservico: OrdemServi
     # Preparando a expressão SQL
     param = ordemservico.model_dump()
     param.update({"id_ordem_servico": id_ordem_servico})
-    query = text("""
+    query = """
         UPDATE ordemservico
         SET 
             dt_servico=:dt_servico, loc_servico=:loc_servico, descricao=:descricao, id_pessoa=:id_pessoa
         WHERE id_ordem_servico=:id_ordem_servico
         RETURNING id_ordem_servico
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -110,14 +110,14 @@ async def remover_ordemservico(session: AsyncSession, id_ordem_servico: int) -> 
     """
     # Preparando a expressão SQL
     param = {"id_ordem_servico": id_ordem_servico}
-    query = text("""
+    query = """
         DELETE FROM ordemservico WHERE id_ordem_servico=:id_ordem_servico RETURNING id_ordem_servico
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -135,16 +135,16 @@ async def buscar_ordemservico(session: AsyncSession, id_ordem_servico: int) -> O
     """
     # Preparando a expressão SQL
     param = {"id_ordem_servico": id_ordem_servico}
-    query = text("""
+    query = """
         SELECT 
             id_ordem_servico, dt_servico, loc_servico, descricao, id_pessoa
         FROM ordemservico
         WHERE id_ordem_servico=:id_ordem_servico
         LIMIT 1
-    """)
+    """
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query, param)).mappings().fetchone()
+    result = (await session.execute(text(query), param)).mappings().fetchone()
 
     # Retornando OrdemServicoGet
     return None if result is None else OrdemServicoGet(**result)

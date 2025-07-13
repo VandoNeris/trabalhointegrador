@@ -32,16 +32,16 @@ async def criar_usuario(session: AsyncSession, usuario: Usuario) -> Optional[int
     # Preparando a expressão SQL
     usuario.senha = hash_password(usuario.senha)
     param = usuario.model_dump()
-    query = text("""
+    query = """
         INSERT INTO usuario (nome, senha, tipo)
         VALUES (:nome, :senha, 0)
         RETURNING id_usuario
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -59,7 +59,7 @@ async def buscar_usuario(session: AsyncSession, nome_filter: str) -> Optional[Us
     """
     # Preparando a expressão SQL
     param = {"nome_filter": nome_filter}
-    query = text("""
+    query = """
         SELECT 
             id_usuario,
             nome,
@@ -67,10 +67,10 @@ async def buscar_usuario(session: AsyncSession, nome_filter: str) -> Optional[Us
             tipo
         FROM usuario
         WHERE nome=:nome_filter
-    """)
+    """
      
     # Executando a query e salvando o resultado
-    result = (await session.execute(query, param)).mappings().fetchone()
+    result = (await session.execute(text(query), param)).mappings().fetchone()
 
     # Retornando UsuarioGet
     return None if result is None else UsuarioGet(**result)
@@ -87,7 +87,7 @@ async def buscar_usuario_por_tipo(session: AsyncSession, nome_filter: str, tipo_
     """
     # Preparando a expressão SQL
     param = {"nome_filter": nome_filter, "tipo_filter": tipo_filter}
-    query = text("""
+    query = """
         SELECT 
             id_usuario,
             nome,
@@ -95,7 +95,7 @@ async def buscar_usuario_por_tipo(session: AsyncSession, nome_filter: str, tipo_
             tipo
         FROM usuario
         WHERE nome=:nome_filter
-    """)
+    """
     
     # Aplicando filtragem
     if tipo_filter is not None:
@@ -103,7 +103,7 @@ async def buscar_usuario_por_tipo(session: AsyncSession, nome_filter: str, tipo_
     query += " LIMIT 1"
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query, param)).mappings().fetchone()
+    result = (await session.execute(text(query), param)).mappings().fetchone()
 
     # Retornando UsuarioGet
     return None if result is None else UsuarioGet(**result)
@@ -113,8 +113,9 @@ def get_current_user_by_type(tipo_filter: Optional[int] = None):
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
             username = payload.get("sub")
+            tipo = payload.get("tipo")
             if username is None: raise http_exc_unauthn
-            token_data = TokenData(username=username)
+            token_data = TokenData(username=username, tipo=tipo)
         except (JWTError):  #, InvalidTokenError):
             raise http_exc_unauthn
         

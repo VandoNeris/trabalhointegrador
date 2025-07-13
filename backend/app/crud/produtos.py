@@ -13,14 +13,14 @@ async def listar_produtos(session: AsyncSession) -> List[ProdutoGet]:
         List[ProdutoGet]: Lista de objetos do tipo ProdutoGet contendo os dados de cada produto.
     """
     # Preparando a expressão SQL
-    query = text("""
+    query = """
         SELECT
             id_produto, nome, quantidade, valor_uni, descricao, categoria, marca
         FROM produtos 
-    """)
+    """
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query)).mappings().all()
+    result = (await session.execute(text(query))).mappings().all()
     
     # Retornando lista de ProdutoGet
     return [ ProdutoGet(**row) for row in result ]
@@ -38,16 +38,16 @@ async def criar_produto(session: AsyncSession, produto: Produto) -> Optional[int
     """
     # Preparando a expressão SQL
     param = produto.model_dump()
-    query = text("""
+    query = """
         INSERT INTO produto (nome, quantidade, valor_uni, descricao, categoria, marca)
         VALUES (:nome, :quantidade, :valor_uni, :descricao, :categoria, :marca)
         RETURNING id_produto
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -69,18 +69,18 @@ async def atualizar_produto(session: AsyncSession, produto: Produto, id_produto:
     # Preparando a expressão SQL
     param = produto.model_dump()
     param.update({"id_produto": id_produto})
-    query = text("""
+    query = """
         UPDATE produto
         SET 
             nome=:nome, quantidade=:quantidade, valor_uni=:valor_uni, descricao=:descricao, categoria=:categoria, marca=:marca
         WHERE id_produto=:id_produto
         RETURNING id_produto
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -100,14 +100,14 @@ async def remover_produto(session: AsyncSession, id_produto: int) -> Optional[in
     """
     # Preparando a expressão SQL
     param = {"id_produto": id_produto}
-    query = text("""
+    query = """
         DELETE FROM produtos WHERE id_produto=:id_produto RETURNING id_produto
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -125,16 +125,16 @@ async def buscar_produto(session: AsyncSession, id_produto: int) -> Optional[Pro
     """
     # Preparando a expressão SQL
     param = {"id_produto": id_produto}
-    query = text("""
+    query = """
         SELECT 
             id_produto, nome, quantidade, valor_uni, descricao, categoria, marca
         FROM produtos
         WHERE id_produto=:id_produto
         LIMIT 1
-    """)
+    """
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query, param)).mappings().fetchone()
+    result = (await session.execute(text(query), param)).mappings().fetchone()
 
     # Retornando ProdutoGet
     return None if result is None else ProdutoGet(**result)

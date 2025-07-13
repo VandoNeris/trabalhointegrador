@@ -14,14 +14,14 @@ async def listar_compras(session: AsyncSession) -> List[CompraGet]:
         List[CompraGet]: Lista de objetos do tipo CompraGet contendo os dados de cada compra.
     """
     # Preparando a expressão SQL
-    query = text("""
+    query = """
         SELECT
             id_compra, loc_entrega, valor, dt_emissao, dt_vencimento, dt_entrega, dt_pagamento, id_pessoa
         FROM compra
-    """)
+    """
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query)).mappings().all()
+    result = (await session.execute(text(query))).mappings().all()
     if result is None: return list()
     
     # Retornando lista de CompraGet
@@ -44,16 +44,16 @@ async def criar_compra(session: AsyncSession, compra: Compra) -> Optional[int]:
     
     # Preparando a expressão SQL
     param = compra.model_dump()
-    query = text("""
+    query = """
         INSERT INTO compra (loc_entrega, valor, dt_emissao, dt_vencimento, dt_entrega, dt_pagamento, id_pessoa)
         VALUES (:loc_entrega, :valor, :dt_emissao, :dt_vencimento, :dt_entrega, :dt_pagamento, :id_pessoa)
         RETURNING id_compra
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -79,18 +79,18 @@ async def atualizar_compra(session: AsyncSession, compra: Compra, id_compra: int
     # Preparando a expressão SQL
     param = compra.model_dump()
     param.update({"id_compra": id_compra})
-    query = text("""
+    query = """
         UPDATE compra
         SET 
             loc_entrega=:loc_entrega, valor=:valor, dt_emissao=:dt_emissao, dt_vencimento=:dt_vencimento, dt_entrega=:dt_entrega, dt_pagamento=:dt_pagamento, id_pessoa=:id_pessoa
         WHERE id_compra=:id_compra
         RETURNING id_compra
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -110,14 +110,14 @@ async def remover_compra(session: AsyncSession, id_compra: int) -> Optional[int]
     """
     # Preparando a expressão SQL
     param = {"id_compra": id_compra}
-    query = text("""
+    query = """
         DELETE FROM compra WHERE id_compra=:id_compra RETURNING id_compra
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -135,16 +135,16 @@ async def buscar_compra(session: AsyncSession, id_compra: int) -> Optional[Compr
     """
     # Preparando a expressão SQL
     param = {"id_compra": id_compra}
-    query = text("""
+    query = """
         SELECT 
             id_compra, loc_entrega, valor, dt_emissao, dt_vencimento, dt_entrega, dt_pagamento, id_pessoa
         FROM compra
         WHERE id_compra=:id_compra
         LIMIT 1
-    """)
+    """
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query, param)).mappings().fetchone()
+    result = (await session.execute(text(query), param)).mappings().fetchone()
 
     # Retornando CompraGet
     return None if result is None else CompraGet(**result)

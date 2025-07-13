@@ -13,14 +13,14 @@ async def listar_pessoas(session: AsyncSession) -> List[PessoaGet]:
         List[PessoaGet]: Lista de objetos do tipo PessoaGet contendo os dados de cada pessoa.
     """
     # Preparando a expressão SQL
-    query = text("""
+    query = """
         SELECT
             id_pessoa, tipo, nome, endereco, telefone, email, cpf, cnpj, razao_social
         FROM pessoa 
-    """)
+    """
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query)).mappings().all()
+    result = (await session.execute(text(query))).mappings().all()
     
     # Retornando lista de PessoaGet
     return [ PessoaGet(**row) for row in result ]
@@ -28,7 +28,7 @@ async def listar_pessoas(session: AsyncSession) -> List[PessoaGet]:
 
 
 async def get_totais_por_tipo(session: AsyncSession):
-    query = text("""
+    query = """
         SELECT 
             COUNT(*) AS value, 
             CASE
@@ -38,9 +38,9 @@ async def get_totais_por_tipo(session: AsyncSession):
             END AS name 
         FROM usuario
         GROUP BY tipo; 
-    """)
+    """
 
-    result = (await session.execute(query)).mappings().all()
+    result = (await session.execute(text(query))).mappings().all()
         
     return result
 
@@ -58,15 +58,15 @@ async def listar_pessoas_por_tipo(session: AsyncSession, tipo: int) -> List[Pess
     """
     # Preparando a expressão SQL
     param = {"tipo_filtro": tipo}
-    query = text("""
+    query = """
         SELECT
             id_pessoa, tipo, nome, endereco, telefone, email, cpf, cnpj, razao_social
         FROM pessoa
         WHERE tipo=:tipo_filtro 
-    """)
+    """
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query, param)).mappings().all()
+    result = (await session.execute(text(query), param)).mappings().all()
     
     # Retornando lista de PessoaGet
     return [PessoaGet(**row) for row in result]
@@ -84,16 +84,16 @@ async def criar_pessoa(session: AsyncSession, pessoa: Pessoa) -> Optional[int]:
     """
     # Preparando a expressão SQL
     param = pessoa.model_dump()
-    query = text("""
+    query = """
         INSERT INTO pessoa (tipo, nome, endereco, telefone, email, cpf, cnpj, razao_social)
         VALUES (:tipo, :nome, :endereco, :telefone, :email, :cpf, :cnpj, :razao_social)
         RETURNING id_pessoa
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -115,18 +115,18 @@ async def atualizar_pessoa(session: AsyncSession, pessoa: Pessoa, id_pessoa: int
     # Preparando a expressão SQL
     param = pessoa.model_dump()
     param.update({"id_pessoa": id_pessoa})
-    query = text("""
+    query = """
         UPDATE pessoa
         SET 
             tipo=:tipo, nome=:nome, endereco=:endereco, telefone=:telefone, email=:email, cpf=:cpf, cnpj=:cnpj, razao_social=:razao_social
         WHERE id_pessoa=:id_pessoa
         RETURNING id_pessoa
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -146,14 +146,14 @@ async def remover_pessoa(session: AsyncSession, id_pessoa: int) -> Optional[int]
     """
     # Preparando a expressão SQL
     param = {"id_pessoa": id_pessoa}
-    query = text("""
+    query = """
         DELETE FROM pessoa WHERE id_pessoa=:id_pessoa RETURNING id_pessoa
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -171,16 +171,16 @@ async def buscar_pessoa(session: AsyncSession, id_pessoa: int) -> Optional[Pesso
     """
     # Preparando a expressão SQL
     param = {"id_pessoa": id_pessoa}
-    query = text("""
+    query = """
         SELECT 
             id_pessoa, tipo, nome, endereco, telefone, email, cpf, cnpj, razao_social
         FROM pessoa
         WHERE id_pessoa=:id_pessoa
         LIMIT 1
-    """)
+    """
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query, param)).mappings().fetchone()
+    result = (await session.execute(text(query), param)).mappings().fetchone()
 
     # Retornando PessoaGet
     return None if result is None else PessoaGet(**result)

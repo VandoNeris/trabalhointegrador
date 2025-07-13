@@ -13,14 +13,14 @@ async def listar_maquinas(session: AsyncSession) -> List[MaquinaGet]:
         List[MaquinaGet]: Lista de objetos do tipo MaquinaGet contendo os dados de cada maquina.
     """
     # Preparando a expressão SQL
-    query = text("""
+    query = """
         SELECT
             id_maquina, nome, descricao
         FROM maquina
-    """)
+    """
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query)).mappings().all()
+    result = (await session.execute(text(query))).mappings().all()
     
     # Retornando lista de MaquinaGet
     return [ MaquinaGet(**row) for row in result ]
@@ -38,16 +38,16 @@ async def criar_maquina(session: AsyncSession, maquina: Maquina) -> Optional[int
     """
     # Preparando a expressão SQL
     param = maquina.model_dump()
-    query = text("""
+    query = """
         INSERT INTO maquina (nome, descricao)
         VALUES (:nome, :descricao)
         RETURNING id_maquina
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -69,18 +69,18 @@ async def atualizar_maquina(session: AsyncSession, maquina: Maquina, id_maquina:
     # Preparando a expressão SQL
     param = maquina.model_dump()
     param.update({"id_maquina": id_maquina})
-    query = text("""
+    query = """
         UPDATE maquina
         SET 
             nome=:nome, descricao=:descricao
         WHERE id_maquina=:id_maquina
         RETURNING id_maquina
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -100,14 +100,14 @@ async def remover_maquina(session: AsyncSession, id_maquina: int) -> Optional[in
     """
     # Preparando a expressão SQL
     param = {"id_maquina": id_maquina}
-    query = text("""
+    query = """
         DELETE FROM maquina WHERE id_maquina=:id_maquina RETURNING id_maquina
-    """)
+    """
 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, param))
+        result = (await session.execute(text(query), param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -125,16 +125,16 @@ async def buscar_maquina(session: AsyncSession, id_maquina: int) -> Optional[Maq
     """
     # Preparando a expressão SQL
     param = {"id_maquina": id_maquina}
-    query = text("""
+    query = """
         SELECT 
             id_maquina, nome, descricao
         FROM maquina
         WHERE id_maquina=:id_maquina
         LIMIT 1
-    """)
+    """
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query, param)).mappings().fetchone()
+    result = (await session.execute(text(query), param)).mappings().fetchone()
 
     # Retornando MaquinaGet
     return None if result is None else MaquinaGet(**result)
