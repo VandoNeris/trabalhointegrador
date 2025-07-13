@@ -2,6 +2,7 @@
 
 import { Link, useLocation } from "react-router-dom";
 import { Menu } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
 
 //array com os itens e suas respectivas rotas
 const menuItems = [
@@ -10,10 +11,30 @@ const menuItems = [
   { label: "Pessoa", to: "/pessoa" },
   { label: "Empresa", to: "/empresa" },
   { label: "Estoque", to: "/estoque" },
+  { label: "Dashboard", to: "/dashboard" },
 ];
+
+
 //Função que gera a side bar
 export default function AppSidebar() {
   const location = useLocation();
+  const { user } = useAuth();
+
+  const filteredMenuItems = menuItems.filter(item => {
+    // Se não houver usuário logado, não mostra nenhum item
+    if (!user) {
+      return false;
+    }
+
+    // Se o item for "Agenda de Serviços", mostra somente para tipo 0
+    if (item.to === '/agenda') {
+      return user.tipo === 0 || user.tipo === 1;
+    }
+
+    // Para todos os outros itens, mostra somente para tipo 1
+    return user.tipo === 1;
+  });
+
   return (
     //70 px no mobile, 192px no desktop
     <nav className="min-h-screen w-[70px] md:w-48 bg-[#891B14] flex flex-col items-center pt-3">
@@ -22,8 +43,7 @@ export default function AppSidebar() {
         <button className="mb-8 p-2 md:hidden">
           <Menu size={28} color="#fff" />
         </button>
-        {/* Aqui é pra navegar pela sidebar, usa o location pra ver a rota atual e se já estiver nela, o botao fica com bg branco, se não continua com bg vermelho e com hover mais claro */}
-        {menuItems.map((item) => (
+       {filteredMenuItems.map((item) => (
           <Link
             key={item.to}
             to={item.to}

@@ -7,11 +7,14 @@ const tipoPessoaJuridica=1;
 
 export function useEmpresas() {
   const queryClient = useQueryClient();
+  const token = localStorage.getItem('accessToken');
 
   const query = useQuery({
     queryKey: ["pessoas"],
     queryFn: async () => {
-      const res = await fetch(`${API_URL}/pessoas/${tipoPessoaJuridica}`);
+      const res = await fetch(`${API_URL}/pessoas/${tipoPessoaJuridica}`,{
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}`},
+      });
       const data = await res.json();
       return data;
     }
@@ -19,10 +22,10 @@ export function useEmpresas() {
 
   const addMutation = useMutation({
     mutationFn: async (data:any) => {
-      console.log(JSON.stringify(data))
+      const token = localStorage.getItem('accessToken');
       const res = await fetch(`${API_URL}/pessoa`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}`},
         body: JSON.stringify(data)
         // body: JSON.stringify({ nome }),
       });
@@ -36,7 +39,11 @@ export function useEmpresas() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      const res = await fetch(`${API_URL}/pessoa/${id}`, { method: "DELETE" });
+      const token = localStorage.getItem('accessToken');
+      const res = await fetch(`${API_URL}/pessoa/${id}`, { 
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}`}
+      });
       if (!res.ok) throw new Error("Erro ao remover");
       return res.json();
     },

@@ -8,13 +8,42 @@ export default function LoginPage() {
   const [senha, setSenha] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!usuario.trim() || !senha.trim()) {
       alert("Por favor, preencha todos os campos.");
       return;
     }
-    
-    navigate("/");
+
+    // O FastAPI com OAuth2PasswordRequestForm espera dados de formulário, não JSON.
+    const body = new URLSearchParams();
+    body.append('username', usuario);
+    body.append('password', senha);
+
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: body,
+      });
+
+      if (!response.ok) {
+        // Se a resposta não for OK (ex: 401 Unauthorized), lança um erro.
+        throw new Error("Usuário ou senha inválidos.");
+      }
+
+      const data = await response.json();
+      
+      // Armazena o token no localStorage do navegador.
+      localStorage.setItem('accessToken', data.access_token);
+
+      // Redireciona o usuário para a página principal após o login.
+      navigate("/");
+
+    } catch (error: any) {
+      alert(error.message);
+    }
   };
 
   const handleCadastro = () => {
