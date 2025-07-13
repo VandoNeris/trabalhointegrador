@@ -43,7 +43,7 @@ async def criar_servico(session: AsyncSession, servico: Servico) -> Optional[int
         return None
     
     # Preparando a expressão SQL
-    param = servico.dict()
+    param = servico.model_dump()
     query = text("""
         INSERT INTO servico (id_ordem_servico, valor, dt_emissao, dt_vencimento, quilometros, horas, dt_pagamento, descricao)
         VALUES (:id_ordem_servico, :valor, :dt_emissao, :dt_vencimento, :quilometros, :horas, :dt_pagamento, :descricao)
@@ -77,7 +77,7 @@ async def atualizar_servico(session: AsyncSession, servico: Servico, id_servico:
         return None
     
     # Preparando a expressão SQL
-    param = servico.dict()
+    param = servico.model_dump()
     param.update({"id_servico": id_servico})
     query = text("""
         UPDATE servico
@@ -109,6 +109,7 @@ async def remover_servico(session: AsyncSession, id_servico: int) -> Optional[in
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
     # Preparando a expressão SQL
+    param = {"id_servico": id_servico}
     query = text("""
         DELETE FROM servico WHERE id_servico=:id_servico RETURNING id_servico
     """)
@@ -116,7 +117,7 @@ async def remover_servico(session: AsyncSession, id_servico: int) -> Optional[in
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, {"id_servico": id_servico}))
+        result = (await session.execute(query, param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -133,6 +134,7 @@ async def buscar_servico(session: AsyncSession, id_servico: int) -> Optional[Ser
         Optional[ServicoGet]: Objeto contendo os dados da servico, ou None se não encontrada.
     """
     # Preparando a expressão SQL
+    param = {"id_servico": id_servico}
     query = text("""
         SELECT 
             id_servico, id_ordem_servico, valor, dt_emissao, dt_vencimento, quilometros, horas, dt_pagamento, descricao
@@ -142,7 +144,7 @@ async def buscar_servico(session: AsyncSession, id_servico: int) -> Optional[Ser
     """)
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query, {"id_servico": id_servico})).mappings().fetchone()
+    result = (await session.execute(query, param)).mappings().fetchone()
 
     # Retornando ServicoGet
     return None if result is None else ServicoGet(**result)

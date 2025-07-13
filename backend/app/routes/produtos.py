@@ -9,7 +9,7 @@ from typing import List
 router = APIRouter()
 
 # Definindo excessão personalidada
-http_exc_pk = HTTPException(status_code=404, detail="Produto com o ID informado não foi encontrada.")
+http_exc_pk = HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Produto com o ID informado não foi encontrada.")
 
 @router.get("/produtos", response_model=List[ProdutoGet])
 async def get_produtos(session: AsyncSession = Depends(get_session)):

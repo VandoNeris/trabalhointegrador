@@ -37,7 +37,7 @@ async def criar_maquina(session: AsyncSession, maquina: Maquina) -> Optional[int
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
     # Preparando a expressão SQL
-    param = maquina.dict()
+    param = maquina.model_dump()
     query = text("""
         INSERT INTO maquina (nome, descricao)
         VALUES (:nome, :descricao)
@@ -67,7 +67,7 @@ async def atualizar_maquina(session: AsyncSession, maquina: Maquina, id_maquina:
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
     # Preparando a expressão SQL
-    param = maquina.dict()
+    param = maquina.model_dump()
     param.update({"id_maquina": id_maquina})
     query = text("""
         UPDATE maquina
@@ -99,6 +99,7 @@ async def remover_maquina(session: AsyncSession, id_maquina: int) -> Optional[in
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
     # Preparando a expressão SQL
+    param = {"id_maquina": id_maquina}
     query = text("""
         DELETE FROM maquina WHERE id_maquina=:id_maquina RETURNING id_maquina
     """)
@@ -106,7 +107,7 @@ async def remover_maquina(session: AsyncSession, id_maquina: int) -> Optional[in
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, {"id_maquina": id_maquina}))
+        result = (await session.execute(query, param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -123,6 +124,7 @@ async def buscar_maquina(session: AsyncSession, id_maquina: int) -> Optional[Maq
         Optional[MaquinaGet]: Objeto contendo os dados da maquina, ou None se não encontrada.
     """
     # Preparando a expressão SQL
+    param = {"id_maquina": id_maquina}
     query = text("""
         SELECT 
             id_maquina, nome, descricao
@@ -132,7 +134,7 @@ async def buscar_maquina(session: AsyncSession, id_maquina: int) -> Optional[Maq
     """)
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query, {"id_maquina": id_maquina})).mappings().fetchone()
+    result = (await session.execute(query, param)).mappings().fetchone()
 
     # Retornando MaquinaGet
     return None if result is None else MaquinaGet(**result)

@@ -9,7 +9,7 @@ from typing import List
 router = APIRouter()
 
 # Definindo excessão personalidada
-http_exc_pk = HTTPException(status_code=404, detail="Maquina com o ID informado não foi encontrada.")
+http_exc_pk = HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Maquina com o ID informado não foi encontrada.")
 
 @router.get("/maquinas", response_model=List[MaquinaGet])
 async def get_maquinas(session: AsyncSession = Depends(get_session)):

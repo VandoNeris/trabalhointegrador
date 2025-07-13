@@ -45,7 +45,7 @@ async def criar_consumoservico(session: AsyncSession, consumoservico: ConsumoSer
         return None
     
     # Preparando a expressão SQL
-    param = consumoservico.dict()
+    param = consumoservico.model_dump()
     query = text("""
         INSERT INTO consumoservico (quantidade, id_produto, id_servico)
         VALUES (:quantidade, :id_produto, :id_servico)
@@ -81,7 +81,7 @@ async def atualizar_consumoservico(session: AsyncSession, consumoservico: Consum
         return None
     
     # Preparando a expressão SQL
-    param = consumoservico.dict()
+    param = consumoservico.model_dump()
     param.update({"id_consumo_servico": id_consumo_servico})
     query = text("""
         UPDATE consumoservico
@@ -113,6 +113,7 @@ async def remover_consumoservico(session: AsyncSession, id_consumo_servico: int)
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
     # Preparando a expressão SQL
+    param = {"id_consumo_servico": id_consumo_servico}
     query = text("""
         DELETE FROM consumoservico WHERE id_consumo_servico=:id_consumo_servico RETURNING id_consumo_servico
     """)
@@ -120,7 +121,7 @@ async def remover_consumoservico(session: AsyncSession, id_consumo_servico: int)
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, {"id_consumo_servico": id_consumo_servico}))
+        result = (await session.execute(query, param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -137,6 +138,7 @@ async def buscar_consumoservico(session: AsyncSession, id_consumo_servico: int) 
         Optional[ConsumoServicoGet]: Objeto contendo os dados da consumoservico, ou None se não encontrada.
     """
     # Preparando a expressão SQL
+    param = {"id_consumo_servico": id_consumo_servico}
     query = text("""
         SELECT 
             id_consumo_servico, quantidade, id_produto, id_servico
@@ -146,7 +148,7 @@ async def buscar_consumoservico(session: AsyncSession, id_consumo_servico: int) 
     """)
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query, {"id_consumo_servico": id_consumo_servico})).mappings().fetchone()
+    result = (await session.execute(query, param)).mappings().fetchone()
 
     # Retornando ConsumoServicoGet
     return None if result is None else ConsumoServicoGet(**result)

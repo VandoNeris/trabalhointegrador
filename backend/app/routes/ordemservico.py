@@ -9,8 +9,8 @@ from typing import List
 router = APIRouter()
 
 # Definindo excessão personalidada
-http_exc_pk = HTTPException(status_code=404, detail="OrdemServico com o ID informado não foi encontrada.")
-http_exc_fk = HTTPException(status_code=422, detail="Não foi possível criar a ordemservico: vínculo com outra tabela é inválido ou inexistente.")
+http_exc_pk = HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="OrdemServico com o ID informado não foi encontrada.")
+http_exc_fk = HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Não foi possível criar a ordemservico: vínculo com outra tabela é inválido ou inexistente.")
 
 @router.get("/ordemservicos", response_model=List[OrdemServicoGet])
 async def get_ordemservicos(session: AsyncSession = Depends(get_session)):

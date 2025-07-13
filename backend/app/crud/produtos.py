@@ -37,7 +37,7 @@ async def criar_produto(session: AsyncSession, produto: Produto) -> Optional[int
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
     # Preparando a expressão SQL
-    param = produto.dict()
+    param = produto.model_dump()
     query = text("""
         INSERT INTO produto (nome, quantidade, valor_uni, descricao, categoria, marca)
         VALUES (:nome, :quantidade, :valor_uni, :descricao, :categoria, :marca)
@@ -67,7 +67,7 @@ async def atualizar_produto(session: AsyncSession, produto: Produto, id_produto:
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
     # Preparando a expressão SQL
-    param = produto.dict()
+    param = produto.model_dump()
     param.update({"id_produto": id_produto})
     query = text("""
         UPDATE produto
@@ -99,6 +99,7 @@ async def remover_produto(session: AsyncSession, id_produto: int) -> Optional[in
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
     # Preparando a expressão SQL
+    param = {"id_produto": id_produto}
     query = text("""
         DELETE FROM produtos WHERE id_produto=:id_produto RETURNING id_produto
     """)
@@ -106,7 +107,7 @@ async def remover_produto(session: AsyncSession, id_produto: int) -> Optional[in
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, {"id_produto": id_produto}))
+        result = (await session.execute(query, param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -123,6 +124,7 @@ async def buscar_produto(session: AsyncSession, id_produto: int) -> Optional[Pro
         Optional[ProdutoGet]: Objeto contendo os dados da produto, ou None se não encontrada.
     """
     # Preparando a expressão SQL
+    param = {"id_produto": id_produto}
     query = text("""
         SELECT 
             id_produto, nome, quantidade, valor_uni, descricao, categoria, marca
@@ -132,7 +134,7 @@ async def buscar_produto(session: AsyncSession, id_produto: int) -> Optional[Pro
     """)
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query, {"id_produto": id_produto})).mappings().fetchone()
+    result = (await session.execute(query, param)).mappings().fetchone()
 
     # Retornando ProdutoGet
     return None if result is None else ProdutoGet(**result)

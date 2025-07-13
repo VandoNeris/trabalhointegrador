@@ -57,6 +57,7 @@ async def listar_pessoas_por_tipo(session: AsyncSession, tipo: int) -> List[Pess
         List[PessoaGet]: Lista de objetos PessoaGet contendo os dados de cada pessoa encontrada.
     """
     # Preparando a expressão SQL
+    param = {"tipo_filtro": tipo}
     query = text("""
         SELECT
             id_pessoa, tipo, nome, endereco, telefone, email, cpf, cnpj, razao_social
@@ -65,7 +66,7 @@ async def listar_pessoas_por_tipo(session: AsyncSession, tipo: int) -> List[Pess
     """)
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query, {"tipo_filtro": tipo})).mappings().all()
+    result = (await session.execute(query, param)).mappings().all()
     
     # Retornando lista de PessoaGet
     return [PessoaGet(**row) for row in result]
@@ -82,7 +83,7 @@ async def criar_pessoa(session: AsyncSession, pessoa: Pessoa) -> Optional[int]:
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
     # Preparando a expressão SQL
-    param = pessoa.dict()
+    param = pessoa.model_dump()
     query = text("""
         INSERT INTO pessoa (tipo, nome, endereco, telefone, email, cpf, cnpj, razao_social)
         VALUES (:tipo, :nome, :endereco, :telefone, :email, :cpf, :cnpj, :razao_social)
@@ -112,7 +113,7 @@ async def atualizar_pessoa(session: AsyncSession, pessoa: Pessoa, id_pessoa: int
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
     # Preparando a expressão SQL
-    param = pessoa.dict()
+    param = pessoa.model_dump()
     param.update({"id_pessoa": id_pessoa})
     query = text("""
         UPDATE pessoa
@@ -144,6 +145,7 @@ async def remover_pessoa(session: AsyncSession, id_pessoa: int) -> Optional[int]
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
     # Preparando a expressão SQL
+    param = {"id_pessoa": id_pessoa}
     query = text("""
         DELETE FROM pessoa WHERE id_pessoa=:id_pessoa RETURNING id_pessoa
     """)
@@ -151,7 +153,7 @@ async def remover_pessoa(session: AsyncSession, id_pessoa: int) -> Optional[int]
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, {"id_pessoa": id_pessoa}))
+        result = (await session.execute(query, param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -168,6 +170,7 @@ async def buscar_pessoa(session: AsyncSession, id_pessoa: int) -> Optional[Pesso
         Optional[PessoaGet]: Objeto contendo os dados da pessoa, ou None se não encontrada.
     """
     # Preparando a expressão SQL
+    param = {"id_pessoa": id_pessoa}
     query = text("""
         SELECT 
             id_pessoa, tipo, nome, endereco, telefone, email, cpf, cnpj, razao_social
@@ -177,7 +180,7 @@ async def buscar_pessoa(session: AsyncSession, id_pessoa: int) -> Optional[Pesso
     """)
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query, {"id_pessoa": id_pessoa})).mappings().fetchone()
+    result = (await session.execute(query, param)).mappings().fetchone()
 
     # Retornando PessoaGet
     return None if result is None else PessoaGet(**result)

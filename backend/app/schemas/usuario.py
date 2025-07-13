@@ -1,4 +1,4 @@
-from pydantic import BaseModel, model_validator, StringConstraints, Field
+from pydantic import BaseModel, StringConstraints, Field
 from typing import Optional, Annotated
 import datetime as dt
 from enum import IntEnum
@@ -21,3 +21,12 @@ class Usuario(BaseModel):
 
 class UsuarioGet(Usuario):
     id_usuario: Annotated[ int, Field(gt=0) ]
+
+### Token de autenticação
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: Optional[ str ] = None
+    tipo: Optional[ int ] = None

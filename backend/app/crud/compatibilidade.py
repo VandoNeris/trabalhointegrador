@@ -45,7 +45,7 @@ async def criar_compatibilidade(session: AsyncSession, compatibilidade: Compatib
         return None
     
     # Preparando a expressão SQL
-    param = compatibilidade.dict()
+    param = compatibilidade.model_dump()
     query = text("""
         INSERT INTO compatibilidade (id_produto, id_maquina)
         VALUES (:id_produto, :id_maquina)
@@ -81,7 +81,7 @@ async def atualizar_compatibilidade(session: AsyncSession, compatibilidade: Comp
         return None
     
     # Preparando a expressão SQL
-    param = compatibilidade.dict()
+    param = compatibilidade.model_dump()
     param.update({"id_compatibilidade": id_compatibilidade})
     query = text("""
         UPDATE compatibilidade
@@ -113,6 +113,7 @@ async def remover_compatibilidade(session: AsyncSession, id_compatibilidade: int
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
     # Preparando a expressão SQL
+    param = {"id_compatibilidade": id_compatibilidade}
     query = text("""
         DELETE FROM compatibilidade WHERE id_compatibilidade=:id_compatibilidade RETURNING id_compatibilidade
     """)
@@ -120,7 +121,7 @@ async def remover_compatibilidade(session: AsyncSession, id_compatibilidade: int
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, {"id_compatibilidade": id_compatibilidade}))
+        result = (await session.execute(query, param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -137,6 +138,7 @@ async def buscar_compatibilidade(session: AsyncSession, id_compatibilidade: int)
         Optional[CompatibilidadeGet]: Objeto contendo os dados da compatibilidade, ou None se não encontrada.
     """
     # Preparando a expressão SQL
+    param = {"id_compatibilidade": id_compatibilidade}
     query = text("""
         SELECT 
             id_compatibilidade, id_produto, id_maquina
@@ -146,7 +148,7 @@ async def buscar_compatibilidade(session: AsyncSession, id_compatibilidade: int)
     """)
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query, {"id_compatibilidade": id_compatibilidade})).mappings().fetchone()
+    result = (await session.execute(query, param)).mappings().fetchone()
 
     # Retornando CompatibilidadeGet
     return None if result is None else CompatibilidadeGet(**result)

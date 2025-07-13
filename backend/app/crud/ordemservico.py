@@ -43,7 +43,7 @@ async def criar_ordemservico(session: AsyncSession, ordemservico: OrdemServico) 
         return None
     
     # Preparando a expressão SQL
-    param = ordemservico.dict()
+    param = ordemservico.model_dump()
     query = text("""
         INSERT INTO ordemservico (dt_servico, loc_servico, descricao, id_pessoa)
         VALUES (:dt_servico, :loc_servico, :descricao, :id_pessoa)
@@ -77,7 +77,7 @@ async def atualizar_ordemservico(session: AsyncSession, ordemservico: OrdemServi
         return None
     
     # Preparando a expressão SQL
-    param = ordemservico.dict()
+    param = ordemservico.model_dump()
     param.update({"id_ordem_servico": id_ordem_servico})
     query = text("""
         UPDATE ordemservico
@@ -109,6 +109,7 @@ async def remover_ordemservico(session: AsyncSession, id_ordem_servico: int) -> 
         SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
     """
     # Preparando a expressão SQL
+    param = {"id_ordem_servico": id_ordem_servico}
     query = text("""
         DELETE FROM ordemservico WHERE id_ordem_servico=:id_ordem_servico RETURNING id_ordem_servico
     """)
@@ -116,7 +117,7 @@ async def remover_ordemservico(session: AsyncSession, id_ordem_servico: int) -> 
     # Protegendo de excessões
     try:
         # Executando a query e salvando o resultado
-        result = (await session.execute(query, {"id_ordem_servico": id_ordem_servico}))
+        result = (await session.execute(query, param))
         await session.commit()
         return result.scalar()      # Retorna o id em caso de sucesso
     except SQLAlchemyError as e:
@@ -133,6 +134,7 @@ async def buscar_ordemservico(session: AsyncSession, id_ordem_servico: int) -> O
         Optional[OrdemServicoGet]: Objeto contendo os dados da ordemservico, ou None se não encontrada.
     """
     # Preparando a expressão SQL
+    param = {"id_ordem_servico": id_ordem_servico}
     query = text("""
         SELECT 
             id_ordem_servico, dt_servico, loc_servico, descricao, id_pessoa
@@ -142,7 +144,7 @@ async def buscar_ordemservico(session: AsyncSession, id_ordem_servico: int) -> O
     """)
     
     # Executando a query e salvando o resultado
-    result = (await session.execute(query, {"id_ordem_servico": id_ordem_servico})).mappings().fetchone()
+    result = (await session.execute(query, param)).mappings().fetchone()
 
     # Retornando OrdemServicoGet
     return None if result is None else OrdemServicoGet(**result)

@@ -9,8 +9,8 @@ from typing import List
 router = APIRouter()
 
 # Definindo excessão personalidada
-http_exc_pk = HTTPException(status_code=404, detail="Compatibilidade com o ID informado não foi encontrada.")
-http_exc_fk = HTTPException(status_code=422, detail="Não foi possível criar a compatibilidade: vínculo com outra tabela é inválido ou inexistente.")
+http_exc_pk = HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Compatibilidade com o ID informado não foi encontrada.")
+http_exc_fk = HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Não foi possível criar a compatibilidade: vínculo com outra tabela é inválido ou inexistente.")
 
 @router.get("/compatibilidades", response_model=List[CompatibilidadeGet])
 async def get_compatibilidades(session: AsyncSession = Depends(get_session)):
