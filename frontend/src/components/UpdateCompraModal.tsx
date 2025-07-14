@@ -28,7 +28,6 @@ const formatDateForInput = (dateString: string | null | undefined) => {
   if (!dateString) return '';
   try {
     const date = parseISO(dateString);
-    console.log(dateString)
     return format(date, 'yyyy-MM-dd');
   } catch (error) {
     console.error("Data inválida recebida:", dateString);
