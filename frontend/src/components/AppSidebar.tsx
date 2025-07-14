@@ -1,10 +1,8 @@
-//Barra de navegação que fica na lateral da tela
-
-import { Link, useLocation } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { LogOutIcon, Menu } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 
-//array com os itens e suas respectivas rotas
+// 1. REMOVA O LOGOUT DA LISTA DE ITENS DE MENU
 const menuItems = [
   { label: "Nova Cobrança", to: "/cobranca" },
   { label: "Compra", to: "/compra" },
@@ -15,48 +13,60 @@ const menuItems = [
   { label: "Dashboard", to: "/dashboard" },
 ];
 
-
-//Função que gera a side bar
 export default function AppSidebar() {
   const location = useLocation();
-  const { user } = useAuth();
+  const navigate = useNavigate(); // Hook para redirecionar o usuário
+  
+  // 2. PEGUE A FUNÇÃO 'logout' DO SEU HOOK
+  const { user, logout } = useAuth();
+
+  // 3. CRIE A FUNÇÃO QUE SERÁ CHAMADA NO CLIQUE
+  const handleLogout = () => {
+    if (window.confirm("Você tem certeza que deseja sair?")) {
+      logout(); // Limpa o estado e o token
+      navigate("/login", { replace: true }); // Redireciona para a página de login
+    }
+  };
 
   const filteredMenuItems = menuItems.filter(item => {
-    // Se não houver usuário logado, não mostra nenhum item
-    if (!user) {
-      return false;
-    }
-    console.log(user.tipo)
-    // Se o item for "Agenda de Serviços", mostra somente para tipo 0
-    // if (item.to === '/agenda') {
-    //   return user.tipo === 0 || user.tipo === 1;
-    // }
-
-    // Para todos os outros itens, mostra somente para tipo 1
-    return user.tipo === 0 || user.tipo ===1;
+    if (!user) return false;
+    // Sua lógica de filtro continua aqui...
+    return user.tipo === 0 || user.tipo === 1;
   });
 
   return (
-    //70 px no mobile, 192px no desktop
     <nav className="min-h-screen w-[70px] md:w-48 bg-[#891B14] flex flex-col items-center pt-3">
-      <div className="flex flex-col items-center w-full">
-        {/* botão mobile, ícone de menu que só aparece no mobile */}
-        <button className="mb-8 p-2 md:hidden">
-          <Menu size={28} color="#fff" />
-        </button>
-       {filteredMenuItems.map((item) => (
-          <Link
-            key={item.to}
-            to={item.to}
-            className={`mb-2 w-[90%] px-4 py-3 rounded-md ${
-              location.pathname === item.to
-                ? "bg-white text-[#891B14] font-semibold"
-                : "text-white hover:bg-[#ad3c36]"
-            } text-lg text-center duration-100`}
-          >
-            {item.label}
-          </Link>
-        ))}
+      <div className="flex flex-col w-full h-full">
+        <div className="flex flex-col items-center w-full">
+          <button className="mb-8 p-2 md:hidden">
+            <Menu size={28} color="#fff" />
+          </button>
+          {filteredMenuItems.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={`mb-2 w-[90%] px-4 py-3 rounded-md ${
+                location.pathname === item.to
+                  ? "bg-white text-[#891B14] font-semibold"
+                  : "text-white hover:bg-[#ad3c36]"
+              } text-lg text-center duration-100`}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+        <div className="mt-auto mb-4 w-full flex justify-center">
+          {user && ( 
+            <button
+              onClick={handleLogout}
+              title="Logout"
+              className="flex items-center justify-center gap-2 w-[90%] text-white hover:bg-[#ad3c36] p-3 rounded-md duration-100"
+            >
+              <LogOutIcon size={22} />
+              <span className="hidden md:inline">Sair</span>
+            </button>
+          )}
+        </div>
       </div>
     </nav>
   );
