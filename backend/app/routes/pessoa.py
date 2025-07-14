@@ -18,8 +18,9 @@ http_exc_pk = HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pesso
 @router.get("/pessoas", response_model=List[PessoaGet])
 async def get_pessoas(
     session: AsyncSession = Depends(get_session),
-    current_user: Usuario = Depends(get_current_user_by_type())
+    current_user: Usuario = Depends(get_current_user_by_type)
 ):
+
     result = await pessoa_crud.listar_pessoas(session)
 
     return result
@@ -74,6 +75,7 @@ async def get_pessoas(
     session: AsyncSession = Depends(get_session), 
     current_user: Usuario = Depends(get_current_user_by_type)
 ):
+    print(tipo)
     result = await pessoa_crud.listar_pessoas_por_tipo(session, tipo)
 
     return result
