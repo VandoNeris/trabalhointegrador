@@ -43,6 +43,13 @@ export default function CompraPage() {
 
   const handleAddCompra = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validação: data de entrega antes da data de pagamento
+    if (dataEntrega && dataPagamento && dataEntrega < dataPagamento) {
+      alert("A data de entrega não pode ser anterior à data de pagamento.");
+      return;
+    }
+
     if (!enderecoCompra.trim()) {
       alert("Por favor, preencha o endereço.");
       return;

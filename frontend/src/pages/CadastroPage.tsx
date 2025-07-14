@@ -19,6 +19,12 @@ export default function CadastroPage() {
       return;
     }
 
+    // Verificação do tamanho mínimo da senha
+    if (senha.length < 6) {
+      alert("A senha deve ter pelo menos 6 caracteres.");
+      return;
+    }
+
     // <-- 2. ADICIONADO: Verificação se as senhas coincidem
     if (senha !== confirmaSenha) {
       alert("As senhas não coincidem. Por favor, verifique.");
