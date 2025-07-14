@@ -28,12 +28,12 @@ export default function AppSidebar() {
     }
     console.log(user.tipo)
     // Se o item for "Agenda de Serviços", mostra somente para tipo 0
-    if (item.to === '/agenda') {
-      return user.tipo === 0 || user.tipo === 1;
-    }
+    // if (item.to === '/agenda') {
+    //   return user.tipo === 0 || user.tipo === 1;
+    // }
 
     // Para todos os outros itens, mostra somente para tipo 1
-    return user.tipo === 0;
+    return user.tipo === 0 || user.tipo ===1;
   });
 
   return (

@@ -170,11 +170,11 @@ async def buscar_compra(session: AsyncSession, id_compra: int) -> Optional[Compr
 
 async def get_totais_por_dia(session: AsyncSession):
     query = """
-        SELECT sum(valor) as valor, dt_emissao
+        SELECT dt_emissao as data, sum(valor) as total
 	FROM public.compra
 	group by dt_emissao;
     """
 
     result = (await session.execute(text(query))).mappings().all()
-        
+    print(result)
     return result

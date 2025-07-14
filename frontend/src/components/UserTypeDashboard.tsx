@@ -68,7 +68,7 @@ export default function UserTypeDashboard() {
     queryKey: ['dashboardUserTypes'], // Chave única para esta query
     queryFn: async () => {
       const response = await fetchWithAuth('/dashboard/users/type');
-      console.log(response)
+
       if (!response.ok) {
         throw new Error('Falha ao carregar os dados do dashboard.');
       }

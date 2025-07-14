@@ -4,10 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchWithAuth } from '../hooks/useCompras'; // Usando a função que criamos anteriormente
 
 // Define o tipo de dado que esperamos da nossa API
-interface UserTypeData {
-  value: number;
-  name: string;
-  tipo: number;
+interface DadosGrafico {
+  data: string;  // Formato 'AAAA-MM-DD'
+  total: number;
 }
 
 /**
@@ -15,47 +14,64 @@ interface UserTypeData {
  * @param data Os dados recebidos da API.
  * @returns Um objeto de configuração para o ECharts.
  */
-const getChartOptions = (data: UserTypeData[]) => {
+const getChartOptions = (data: DadosGrafico[]) => {
   return {
     // Tooltip que aparece ao passar o mouse
-    tooltip: {
-      trigger: 'item',
-      formatter: '{b}: {c} ({d}%)' // Formato: Nome: Valor (Porcentagem%)
-    },
-    // Legenda do gráfico
-    legend: {
-      top: '5%',
-      left: 'center'
-    },
-    // A série de dados do gráfico
-    series: [
-      {
-        name: 'Usuários por Tipo',
-        type: 'pie', // Tipo do gráfico
-        radius: ['40%', '70%'], // Raio interno e externo, o que cria o efeito "Donut"
-        avoidLabelOverlap: false,
-        padAngle: 5,
-        itemStyle: {
-          borderRadius: 10
+    title: {
+          text: "titulo",
+          left: 'center',
         },
-        label: {
-          show: false,
-          position: 'center'
+        tooltip: {
+          trigger: 'axis', // O tooltip aparecerá ao passar o mouse sobre o eixo
+          axisPointer: {
+            type: 'shadow', // O ponteiro será uma sombra sobre a barra
+          },
         },
-        emphasis: {
-          label: {
-            show: true,
-            fontSize: 30,
-            fontWeight: 'bold'
-          }
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true,
         },
-        labelLine: {
-          show: false
-        },
-        data: data, // Injecta os dados da API aqui!
-      },
-    ],
-  };
+        xAxis: [
+          {
+            type: 'category', // Eixo de categorias (dias)
+            axisTick: {
+              alignWithLabel: true,
+            },
+          },
+        ],
+        yAxis: [
+          {
+            type: 'value', // Eixo de valores (total)
+          },
+        ],
+        series: [
+          {
+            name: 'Total',
+            type: 'bar', // TIPO DE GRÁFICO: BARRAS
+            barWidth: '60%',
+            itemStyle: {
+              color: '#5470C6' // Cor das barras
+            },
+            emphasis: {
+                focus: 'series'
+            }
+          },
+        ],
+        // Habilita a funcionalidade de zoom e arrastar
+        dataZoom: [
+            {
+                type: 'inside',
+                start: 0,
+                end: 100
+            },
+            {
+                start: 0,
+                end: 100
+            }
+        ]
+      };
 };
 
 /**
@@ -64,11 +80,11 @@ const getChartOptions = (data: UserTypeData[]) => {
  */
 export default function TotalDiaDashboard() {
 
-  const { data, isLoading, isError, error } = useQuery<UserTypeData[]>({
-    queryKey: ['dashboardUserTypes'], // Chave única para esta query
+  const { data, isLoading, isError, error } = useQuery<DadosGrafico[]>({
+    queryKey: ['dashboardTotalDias'], // Chave única para esta query
     queryFn: async () => {
       const response = await fetchWithAuth('/dashboard/total/compras');
-      console.log(response)
+
       if (!response.ok) {
         throw new Error('Falha ao carregar os dados do dashboard.');
       }

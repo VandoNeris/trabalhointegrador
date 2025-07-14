@@ -90,6 +90,7 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}): Pro
 
   // Monta a URL completa e faz a chamada fetch com as novas opções
   const fullUrl = `${API_URL}${url}`;
+  
   const response = await fetch(fullUrl, {
     ...options,
     headers,
