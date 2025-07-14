@@ -7,22 +7,19 @@ import { useMemo } from 'react';
 
 
 interface Compra {
-  dt_emissao: string; // Ex: "2025-07-14T10:00:00"
+  dt_emissao: string; 
   valor: number;
-  // ...outras propriedades da compra
+
 }
 
 export default function DashboardsPage() {
-  // Buscando os dados de todas as compras
   const { data: compras, isLoading, isError, error } = useCompras();
 
-  // Processando os dados para o formato que o gráfico espera
   const dadosDoGrafico = useMemo(() => {
     if (!compras) return [];
 
-    // Agrupa as compras por dia e soma os totais
     const totaisPorDia = (compras as Compra[]).reduce((acc, compra) => {
-      const dia = compra.dt_emissao.split('T')[0]; // Pega apenas a parte da data 'AAAA-MM-DD'
+      const dia = compra.dt_emissao.split('T')[0]; 
       if (!acc[dia]) {
         acc[dia] = 0;
       }

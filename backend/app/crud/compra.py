@@ -108,29 +108,24 @@ async def atualizar_compra(session: AsyncSession, compra: Compra, id_compra: int
 
 async def remover_compra(session: AsyncSession, id_compra: int) -> Optional[int]:
     """
-    Remove uma compra da tabela `compra` com base no ID informado.
-    Args:
-        session (AsyncSession): Sessão ativa com o banco de dados.
-        id_compra (int): ID da compra a ser removida.
-    Returns:
-        Optional[int]: ID da compra removida, ou None caso não exista.
-    Raises:
-        SQLAlchemyError: Caso ocorra algum erro durante a execução ou commit da transação.
+    Remove uma compra e seus vínculos da tabela `consumocompra`.
     """
-    # Preparando a expressão SQL
-    param = {"id_compra": id_compra}
-    query = """
-        DELETE FROM compra WHERE id_compra=:id_compra RETURNING id_compra
-    """
-
-    # Protegendo de excessões
     try:
-        # Executando a query e salvando o resultado
-        result = (await session.execute(text(query), param))
+        # PASSO 1: Deletar o vínculo na tabela 'consumocompra' primeiro
+        await session.execute(
+            text("DELETE FROM consumocompra WHERE id_compra = :id_compra"),
+            {"id_compra": id_compra}
+        )
+
+        # PASSO 2: Agora deletar a compra principal
+        query = "DELETE FROM compra WHERE id_compra = :id_compra RETURNING id_compra"
+        result = await session.execute(text(query), {"id_compra": id_compra})
+        
         await session.commit()
-        return result.scalar()      # Retorna o id em caso de sucesso
+        
+        return result.scalar()
     except SQLAlchemyError as e:
-        await session.rollback()               # Reverte a transação em caso de erro
+        await session.rollback()
         raise e
 
 async def buscar_compra(session: AsyncSession, id_compra: int) -> Optional[CompraGet]:
