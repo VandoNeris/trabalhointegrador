@@ -2,7 +2,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LogOutIcon, Menu } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 
-// 1. REMOVA O LOGOUT DA LISTA DE ITENS DE MENU
 const menuItems = [
   { label: "Nova Cobrança", to: "/cobranca" },
   { label: "Compra", to: "/compra" },
@@ -17,10 +16,8 @@ export default function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate(); // Hook para redirecionar o usuário
   
-  // 2. PEGUE A FUNÇÃO 'logout' DO SEU HOOK
   const { user, logout } = useAuth();
 
-  // 3. CRIE A FUNÇÃO QUE SERÁ CHAMADA NO CLIQUE
   const handleLogout = () => {
     if (window.confirm("Você tem certeza que deseja sair?")) {
       logout(); // Limpa o estado e o token
@@ -30,7 +27,7 @@ export default function AppSidebar() {
 
   const filteredMenuItems = menuItems.filter(item => {
     if (!user) return false;
-    // Sua lógica de filtro continua aqui...
+    
     return user.tipo === 0 || user.tipo === 1;
   });
 
