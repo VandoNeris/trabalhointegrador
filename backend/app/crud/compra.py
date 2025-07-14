@@ -16,8 +16,17 @@ async def listar_compras(session: AsyncSession) -> List[CompraGet]:
     # Preparando a expressão SQL
     query = """
         SELECT
-            id_compra, loc_entrega, valor, dt_emissao, dt_vencimento, dt_entrega, dt_pagamento, id_pessoa
+            compra.id_compra, 
+            compra.loc_entrega, 
+            compra.valor, 
+            compra.dt_emissao, 
+            compra.dt_vencimento, 
+            compra.dt_entrega, 
+            compra.dt_pagamento, 
+            compra.id_pessoa,
+            pessoa.nome
         FROM compra
+        JOIN pessoa ON pessoa.id_pessoa = compra.id_pessoa
     """
     
     # Executando a query e salvando o resultado
@@ -136,10 +145,19 @@ async def buscar_compra(session: AsyncSession, id_compra: int) -> Optional[Compr
     # Preparando a expressão SQL
     param = {"id_compra": id_compra}
     query = """
-        SELECT 
-            id_compra, loc_entrega, valor, dt_emissao, dt_vencimento, dt_entrega, dt_pagamento, id_pessoa
+        SELECT
+            compra.id_compra, 
+            compra.loc_entrega, 
+            compra.valor, 
+            compra.dt_emissao, 
+            compra.dt_vencimento, 
+            compra.dt_entrega, 
+            compra.dt_pagamento, 
+            compra.id_pessoa,
+            pessoa.nome
         FROM compra
-        WHERE id_compra=:id_compra
+        JOIN pessoa ON pessoa.id_pessoa = compra.id_pessoa
+        WHERE compra.id_compra=:id_compra
         LIMIT 1
     """
     

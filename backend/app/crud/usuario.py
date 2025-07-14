@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import text
 from fastapi import Depends, HTTPException, status
-from typing import Optional, Annotated
+from typing import Optional, Annotated, List
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 # from jwt.exceptions import InvalidTokenError
@@ -81,7 +81,7 @@ async def buscar_usuario_por_tipo(session: AsyncSession, nome_filter: str, tipo_
     Args:
         session (AsyncSession): Sessão ativa com o banco de dados.
         nome (str): nome do usuario a ser consultada.
-        tipo (Optional[int]): Tipo do usuário (0 = admin; 1 = financeiro). Se None, ignora o tipo.
+        tipo (Optional[int]): Tipo do usuário (0 = admin; 1 = regular). Se None, ignora o tipo.
     Returns:
         Optional[UsuarioGet]: Objeto contendo os dados da usuario, ou None se não encontrada.
     """
@@ -108,7 +108,7 @@ async def buscar_usuario_por_tipo(session: AsyncSession, nome_filter: str, tipo_
     # Retornando UsuarioGet
     return None if result is None else UsuarioGet(**result)
 
-def get_current_user_by_type(tipo_filter: Optional[int] = None):
+def get_current_user(allowed_types: Optional[int | List[int]] = None):
     async def dependency(token: Annotated[ str, Depends(oauth2_scheme) ], session: AsyncSession = Depends(get_session)) -> Usuario:
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
@@ -122,7 +122,11 @@ def get_current_user_by_type(tipo_filter: Optional[int] = None):
         user = await buscar_usuario_por_tipo(session=session, nome_filter=token_data.username, tipo_filter=token_data.tipo)
         if user is None:
             raise http_exc_unauthn
-        if user.tipo != tipo_filter:
-            raise http_exc_unauthz
+        
+        # Verificando permissões do usuário:
+        if allowed_types is not None:
+            if isinstance(allowed_types, int): allowed_types = [allowed_types]
+            if user.tipo not in allowed_types:
+                raise http_exc_unauthz
         return user
     return dependency

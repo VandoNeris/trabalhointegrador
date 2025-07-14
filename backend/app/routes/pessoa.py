@@ -5,7 +5,7 @@ from backend.database import get_session
 from backend.app.schemas.pessoa import Pessoa, PessoaGet
 from backend.app.schemas.MensagemResposta import MensagemResposta
 from backend.app.crud import pessoa as pessoa_crud
-from backend.app.crud.usuario import get_current_user_by_type
+from backend.app.crud.usuario import get_current_user
 from backend.app.schemas.usuario import Usuario, TipoUsuario
 
 from typing import List
@@ -18,9 +18,8 @@ http_exc_pk = HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pesso
 @router.get("/pessoas", response_model=List[PessoaGet])
 async def get_pessoas(
     session: AsyncSession = Depends(get_session),
-    current_user: Usuario = Depends(get_current_user_by_type)
+    current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN, TipoUsuario.REGULAR]))
 ):
-
     result = await pessoa_crud.listar_pessoas(session)
 
     return result
@@ -29,7 +28,7 @@ async def get_pessoas(
 async def post_pessoa(
     pessoa: Pessoa, 
     session: AsyncSession = Depends(get_session),
-    current_user: Usuario = Depends(get_current_user_by_type(TipoUsuario.ADMIN))
+    current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN]))
 ):
     result = await pessoa_crud.criar_pessoa(session, pessoa)
 
@@ -40,7 +39,7 @@ async def put_pessoa(
     id_pessoa: int, 
     pessoa: Pessoa, 
     session: AsyncSession = Depends(get_session),
-    current_user: Usuario = Depends(get_current_user_by_type(TipoUsuario.ADMIN))
+    current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN]))
 ):
     result = await pessoa_crud.atualizar_pessoa(session, pessoa, id_pessoa)
     if result is None: raise http_exc_pk
@@ -51,7 +50,7 @@ async def put_pessoa(
 async def delete_pessoa(
     id_pessoa: int, 
     session: AsyncSession = Depends(get_session),
-    current_user: Usuario = Depends(get_current_user_by_type(TipoUsuario.ADMIN))
+    current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN]))
 ):
     result = await pessoa_crud.remover_pessoa(session, id_pessoa)
     if result is None: raise http_exc_pk
@@ -62,7 +61,7 @@ async def delete_pessoa(
 async def get_pessoa(
     id_pessoa: int, 
     session: AsyncSession = Depends(get_session),
-    current_user: Usuario = Depends(get_current_user_by_type)
+    current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN, TipoUsuario.REGULAR]))
 ):
     result = await pessoa_crud.buscar_pessoa(session, id_pessoa)
     if result is None: raise http_exc_pk
@@ -73,7 +72,7 @@ async def get_pessoa(
 async def get_pessoas(
     tipo:int, 
     session: AsyncSession = Depends(get_session), 
-    current_user: Usuario = Depends(get_current_user_by_type)
+    current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN, TipoUsuario.REGULAR]))
 ):
     print(tipo)
     result = await pessoa_crud.listar_pessoas_por_tipo(session, tipo)
@@ -82,8 +81,8 @@ async def get_pessoas(
 
 @router.get("/dashboard/users/type")
 async def get_pessoas_type(
-    session: AsyncSession = Depends(get_session), 
-    current_user: Usuario = Depends(get_current_user_by_type(TipoUsuario.ADMIN))
+    session: AsyncSession = Depends(get_session),
+    current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN, TipoUsuario.REGULAR]))
 ):
     result = await pessoa_crud.get_totais_por_tipo(session)
 

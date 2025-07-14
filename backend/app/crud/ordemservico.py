@@ -16,8 +16,14 @@ async def listar_ordemservicos(session: AsyncSession) -> List[OrdemServicoGet]:
     # Preparando a expressão SQL
     query = """
         SELECT
-            id_ordem_servico, dt_servico, loc_servico, descricao, id_pessoa
+            ordemservico.id_ordem_servico, 
+            ordemservico.dt_servico, 
+            ordemservico.loc_servico, 
+            ordemservico.descricao, 
+            ordemservico.id_pessoa,
+            pessoa.nome
         FROM ordemservico
+        JOIN pessoa ON pessoa.id_pessoa = ordemservico.id_pessoa
     """
     
     # Executando a query e salvando o resultado
@@ -136,10 +142,16 @@ async def buscar_ordemservico(session: AsyncSession, id_ordem_servico: int) -> O
     # Preparando a expressão SQL
     param = {"id_ordem_servico": id_ordem_servico}
     query = """
-        SELECT 
-            id_ordem_servico, dt_servico, loc_servico, descricao, id_pessoa
+        SELECT
+            ordemservico.id_ordem_servico, 
+            ordemservico.dt_servico, 
+            ordemservico.loc_servico, 
+            ordemservico.descricao, 
+            ordemservico.id_pessoa,
+            pessoa.nome
         FROM ordemservico
-        WHERE id_ordem_servico=:id_ordem_servico
+        JOIN pessoa ON pessoa.id_pessoa = ordemservico.id_pessoa
+        WHERE ordemservico.id_ordem_servico=:id_ordem_servico
         LIMIT 1
     """
     

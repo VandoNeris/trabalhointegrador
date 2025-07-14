@@ -16,8 +16,14 @@ async def listar_compatibilidades(session: AsyncSession) -> List[Compatibilidade
     # Preparando a expressão SQL
     query = """
         SELECT
-            id_compatibilidade, id_produto, id_maquina
+            compatibilidade.id_compatibilidade, 
+            compatibilidade.id_produto, 
+            compatibilidade.id_maquina,
+            produto.nome,
+            maquina.nome
         FROM compatibilidade
+        JOIN produto ON produto.id_produto = compatibilidade.id_produto
+        JOIN maquina ON maquina.id_maquina = compatibilidade.id_maquina
     """
     
     # Executando a query e salvando o resultado
@@ -140,10 +146,16 @@ async def buscar_compatibilidade(session: AsyncSession, id_compatibilidade: int)
     # Preparando a expressão SQL
     param = {"id_compatibilidade": id_compatibilidade}
     query = """
-        SELECT 
-            id_compatibilidade, id_produto, id_maquina
+        SELECT
+            compatibilidade.id_compatibilidade, 
+            compatibilidade.id_produto, 
+            compatibilidade.id_maquina,
+            produto.nome,
+            maquina.nome
         FROM compatibilidade
-        WHERE id_compatibilidade=:id_compatibilidade
+        JOIN produto ON produto.id_produto = compatibilidade.id_produto
+        JOIN maquina ON maquina.id_maquina = compatibilidade.id_maquina
+        WHERE compatibilidade.id_compatibilidade=:id_compatibilidade
         LIMIT 1
     """
     

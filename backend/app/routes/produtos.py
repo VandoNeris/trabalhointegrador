@@ -4,6 +4,8 @@ from backend.database import get_session
 from backend.app.schemas.produtos import Produto, ProdutoGet
 from backend.app.schemas.MensagemResposta import MensagemResposta
 from backend.app.crud import produtos as produto_crud
+from backend.app.schemas.usuario import Usuario, TipoUsuario
+from backend.app.crud.usuario import get_current_user
 from typing import List
 
 router = APIRouter()
@@ -12,33 +14,53 @@ router = APIRouter()
 http_exc_pk = HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Produto com o ID informado não foi encontrada.")
 
 @router.get("/produtos", response_model=List[ProdutoGet])
-async def get_produtos(session: AsyncSession = Depends(get_session)):
+async def get_produtos(
+    session: AsyncSession = Depends(get_session),
+    current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN, TipoUsuario.REGULAR]))
+):
     result = await produto_crud.listar_produtos(session)
 
     return result
 
 @router.post("/produto", response_model=MensagemResposta, status_code=status.HTTP_201_CREATED)
-async def post_produto(produto: Produto, session: AsyncSession = Depends(get_session)):
+async def post_produto(
+    produto: Produto,
+    session: AsyncSession = Depends(get_session),
+    current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN]))
+):
     result = await produto_crud.criar_produto(session, produto)
 
     return MensagemResposta(message="Produto criada", id=result)
 
 @router.put("/produto/{id_produto}", response_model=MensagemResposta)
-async def put_produto(id_produto: int, produto: Produto, session: AsyncSession = Depends(get_session)):
+async def put_produto(
+    id_produto: int, 
+    produto: Produto, 
+    session: AsyncSession = Depends(get_session),
+    current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN]))
+):
     result = await produto_crud.atualizar_produto(session, produto, id_produto)
     if result is None: raise http_exc_pk
     
     return MensagemResposta(message="Produto atualizada", id=result)
 
 @router.delete("/produto/{id_produto}", response_model=MensagemResposta)
-async def delete_produto(id_produto: int, session: AsyncSession = Depends(get_session)):
+async def delete_produto(
+    id_produto: int, 
+    session: AsyncSession = Depends(get_session),
+    current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN]))
+):
     result = await produto_crud.remover_produto(session, id_produto)
     if result is None: raise http_exc_pk
     
     return MensagemResposta(message="Produto removida", id=result)
 
 @router.get("/produto/{id_produto}", response_model=ProdutoGet)
-async def get_produto(id_produto: int, session: AsyncSession = Depends(get_session)):
+async def get_produto(
+    id_produto: int, 
+    session: AsyncSession = Depends(get_session),
+    current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN, TipoUsuario.REGULAR]))
+):
     result = await produto_crud.buscar_produto(session, id_produto)
     if result is None: raise http_exc_pk
     

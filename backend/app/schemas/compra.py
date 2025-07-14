@@ -25,4 +25,4 @@ class Compra(BaseModel):
         return model
     
 class CompraGet(Compra):
-    id_pessoa: Annotated[ int, Field(gt=0) ]
+    id_compra: Annotated[ int, Field(gt=0) ]

@@ -16,8 +16,14 @@ async def listar_consumoservicos(session: AsyncSession) -> List[ConsumoServicoGe
     # Preparando a expressão SQL
     query = """
         SELECT
-            id_consumo_servico, quantidade, id_produto, id_servico
+            consumoservico.id_consumo_servico, 
+            consumoservico.quantidade, 
+            consumoservico.id_produto, 
+            consumoservico.id_servico,
+            produto.nome
         FROM consumoservico
+        JOIN servico ON servico.id_servico = consumoservico.id_servico
+        JOIN produto ON produto.id_produto = consumoservico.id_produto
     """
     
     # Executando a query e salvando o resultado
@@ -140,10 +146,16 @@ async def buscar_consumoservico(session: AsyncSession, id_consumo_servico: int) 
     # Preparando a expressão SQL
     param = {"id_consumo_servico": id_consumo_servico}
     query = """
-        SELECT 
-            id_consumo_servico, quantidade, id_produto, id_servico
+        SELECT
+            consumoservico.id_consumo_servico, 
+            consumoservico.quantidade, 
+            consumoservico.id_produto, 
+            consumoservico.id_servico,
+            produto.nome
         FROM consumoservico
-        WHERE id_consumo_servico=:id_consumo_servico
+        JOIN servico ON servico.id_servico = consumoservico.id_servico
+        JOIN produto ON produto.id_produto = consumoservico.id_produto
+        WHERE consumoservico.id_consumo_servico=:id_consumo_servico
         LIMIT 1
     """
     

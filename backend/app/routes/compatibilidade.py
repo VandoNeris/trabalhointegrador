@@ -4,6 +4,8 @@ from backend.database import get_session
 from backend.app.schemas.compatibilidade import Compatibilidade, CompatibilidadeGet
 from backend.app.schemas.MensagemResposta import MensagemResposta
 from backend.app.crud import compatibilidade as compatibilidade_crud
+from backend.app.schemas.usuario import Usuario, TipoUsuario
+from backend.app.crud.usuario import get_current_user
 from typing import List
 
 router = APIRouter()
@@ -13,34 +15,54 @@ http_exc_pk = HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Compa
 http_exc_fk = HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Não foi possível criar a compatibilidade: vínculo com outra tabela é inválido ou inexistente.")
 
 @router.get("/compatibilidades", response_model=List[CompatibilidadeGet])
-async def get_compatibilidades(session: AsyncSession = Depends(get_session)):
+async def get_compatibilidades(
+    session: AsyncSession = Depends(get_session),
+    current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN, TipoUsuario.REGULAR]))
+):
     result = await compatibilidade_crud.listar_compatibilidades(session)
 
     return result
 
 @router.post("/compatibilidade", response_model=MensagemResposta, status_code=status.HTTP_201_CREATED)
-async def post_compatibilidade(compatibilidade: Compatibilidade, session: AsyncSession = Depends(get_session)):
+async def post_compatibilidade(
+    compatibilidade: Compatibilidade, 
+    session: AsyncSession = Depends(get_session),
+    current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN]))
+):
     result = await compatibilidade_crud.criar_compatibilidade(session, compatibilidade)
     if result is None: raise http_exc_fk
 
     return MensagemResposta(message="Compatibilidade criada", id=result)
 
 @router.put("/compatibilidade/{id_compatibilidade}", response_model=MensagemResposta)
-async def put_compatibilidade(id_compatibilidade: int, compatibilidade: Compatibilidade, session: AsyncSession = Depends(get_session)):
+async def put_compatibilidade(
+    id_compatibilidade: int, 
+    compatibilidade: Compatibilidade, 
+    session: AsyncSession = Depends(get_session),
+    current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN]))
+):
     result = await compatibilidade_crud.atualizar_compatibilidade(session, compatibilidade, id_compatibilidade)
     if result is None: raise http_exc_pk
     
     return MensagemResposta(message="Compatibilidade atualizada", id=result)
 
 @router.delete("/compatibilidade/{id_compatibilidade}", response_model=MensagemResposta)
-async def delete_compatibilidade(id_compatibilidade: int, session: AsyncSession = Depends(get_session)):
+async def delete_compatibilidade(
+    id_compatibilidade: int, 
+    session: AsyncSession = Depends(get_session),
+    current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN]))
+):
     result = await compatibilidade_crud.remover_compatibilidade(session, id_compatibilidade)
     if result is None: raise http_exc_pk
     
     return MensagemResposta(message="Compatibilidade removida", id=result)
 
 @router.get("/compatibilidade/{id_compatibilidade}", response_model=CompatibilidadeGet)
-async def get_compatibilidade(id_compatibilidade: int, session: AsyncSession = Depends(get_session)):
+async def get_compatibilidade(
+    id_compatibilidade: int, 
+    session: AsyncSession = Depends(get_session),
+    current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN, TipoUsuario.REGULAR]))
+):
     result = await compatibilidade_crud.buscar_compatibilidade(session, id_compatibilidade)
     if result is None: raise http_exc_pk
     
