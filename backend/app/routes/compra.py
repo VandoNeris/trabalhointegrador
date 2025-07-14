@@ -52,7 +52,9 @@ async def delete_compra(
     session: AsyncSession = Depends(get_session),
     current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN, TipoUsuario.REGULAR]))
 ):
+
     result = await compra_crud.remover_compra(session, id_compra)
+
     if result is None: raise http_exc_pk
     
     return MensagemResposta(message="Compra removida", id=result)
@@ -66,4 +68,14 @@ async def get_compra(
     result = await compra_crud.buscar_compra(session, id_compra)
     if result is None: raise http_exc_pk
     
+    return result
+
+
+@router.get("/dashboard/total/compras")
+async def get_pessoas_type(
+    session: AsyncSession = Depends(get_session),
+    current_user: Usuario = Depends(get_current_user([TipoUsuario.ADMIN, TipoUsuario.REGULAR]))
+):
+    result = await compra_crud.get_totais_por_dia(session)
+
     return result

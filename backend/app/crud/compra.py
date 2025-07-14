@@ -24,7 +24,7 @@ async def listar_compras(session: AsyncSession) -> List[CompraGet]:
             compra.dt_entrega, 
             compra.dt_pagamento, 
             compra.id_pessoa,
-            pessoa.nome
+            pessoa.nome as nome_pessoa
         FROM compra
         JOIN pessoa ON pessoa.id_pessoa = compra.id_pessoa
     """
@@ -166,3 +166,15 @@ async def buscar_compra(session: AsyncSession, id_compra: int) -> Optional[Compr
 
     # Retornando CompraGet
     return None if result is None else CompraGet(**result)
+
+
+async def get_totais_por_dia(session: AsyncSession):
+    query = """
+        SELECT sum(valor) as valor, dt_emissao
+	FROM public.compra
+	group by dt_emissao;
+    """
+
+    result = (await session.execute(text(query))).mappings().all()
+        
+    return result

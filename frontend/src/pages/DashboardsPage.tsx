@@ -1,6 +1,7 @@
 // Em uma página como `src/pages/Index.tsx`
 
 import UserTypeDashboard from '@/components/UserTypeDashboard';
+import TotalDiaDashboard from '@/components/TotalPorDiaChart';
 
 export default function Index() {
   return (
@@ -15,8 +16,7 @@ export default function Index() {
 
         {/* Exemplo de outro card no dashboard */}
         <div className="p-4 bg-white rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-2 text-gray-700">Outro Card</h2>
-          <p>Mais informações aqui...</p>
+          <TotalDiaDashboard />
         </div>
       </div>
     </div>

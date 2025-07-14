@@ -7,6 +7,7 @@ import { useAuth } from "../hooks/useAuth";
 //array com os itens e suas respectivas rotas
 const menuItems = [
   { label: "Nova Cobrança", to: "/cobranca" },
+  { label: "Compra", to: "/compra" },
   { label: "Agenda de Serviços", to: "/agenda" },
   { label: "Pessoa", to: "/pessoa" },
   { label: "Empresa", to: "/empresa" },
@@ -25,14 +26,14 @@ export default function AppSidebar() {
     if (!user) {
       return false;
     }
-
+    console.log(user.tipo)
     // Se o item for "Agenda de Serviços", mostra somente para tipo 0
     if (item.to === '/agenda') {
       return user.tipo === 0 || user.tipo === 1;
     }
 
     // Para todos os outros itens, mostra somente para tipo 1
-    return user.tipo === 1;
+    return user.tipo === 0;
   });
 
   return (

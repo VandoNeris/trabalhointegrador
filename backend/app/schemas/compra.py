@@ -26,3 +26,4 @@ class Compra(BaseModel):
     
 class CompraGet(Compra):
     id_compra: Annotated[ int, Field(gt=0) ]
+    nome_pessoa: str

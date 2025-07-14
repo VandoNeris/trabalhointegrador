@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactECharts from 'echarts-for-react';
 import { useQuery } from '@tanstack/react-query';
-import { fetchWithAuth } from '../hooks/usePessoas'; // Usando a função que criamos anteriormente
+import { fetchWithAuth } from '../hooks/useCompras'; // Usando a função que criamos anteriormente
 
 // Define o tipo de dado que esperamos da nossa API
 interface UserTypeData {
@@ -62,12 +62,12 @@ const getChartOptions = (data: UserTypeData[]) => {
  * Componente de dashboard que exibe um gráfico de Donut
  * mostrando a quantidade de usuários por tipo.
  */
-export default function UserTypeDashboard() {
+export default function TotalDiaDashboard() {
 
   const { data, isLoading, isError, error } = useQuery<UserTypeData[]>({
     queryKey: ['dashboardUserTypes'], // Chave única para esta query
     queryFn: async () => {
-      const response = await fetchWithAuth('/dashboard/users/type');
+      const response = await fetchWithAuth('/dashboard/total/compras');
       console.log(response)
       if (!response.ok) {
         throw new Error('Falha ao carregar os dados do dashboard.');
@@ -94,7 +94,7 @@ export default function UserTypeDashboard() {
 
   return (
     <div className="p-4 bg-white rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-2 text-gray-700">Usuários por Tipo</h2>
+      <h2 className="text-xl font-semibold mb-2 text-gray-700">Total de compras por dia</h2>
       <ReactECharts
         option={getChartOptions(data || [])}
         style={{ height: '400px', width: '100%' }}

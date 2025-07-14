@@ -110,6 +110,7 @@ async def buscar_usuario_por_tipo(session: AsyncSession, nome_filter: str, tipo_
 
 def get_current_user(allowed_types: Optional[int | List[int]] = None):
     async def dependency(token: Annotated[ str, Depends(oauth2_scheme) ], session: AsyncSession = Depends(get_session)) -> Usuario:
+        nonlocal allowed_types
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
             username = payload.get("sub")
@@ -128,5 +129,6 @@ def get_current_user(allowed_types: Optional[int | List[int]] = None):
             if isinstance(allowed_types, int): allowed_types = [allowed_types]
             if user.tipo not in allowed_types:
                 raise http_exc_unauthz
+
         return user
     return dependency

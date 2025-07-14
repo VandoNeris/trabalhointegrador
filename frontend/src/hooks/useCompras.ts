@@ -3,15 +3,16 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const API_URL = "http://localhost:8000"; 
 
-const tipoPessoaFisica=0;
-
-export function usePessoas() {
+export function useCompras() {
+  interface ErrorResponse {
+    detail: string;
+  }
   const queryClient = useQueryClient();
   const token = localStorage.getItem('accessToken');
   const query = useQuery({
-    queryKey: ["pessoas", tipoPessoaFisica],
+    queryKey: ["compras"],
     queryFn: async () => {
-      const res = await fetch(`${API_URL}/pessoas/${tipoPessoaFisica}`,{
+      const res = await fetch(`${API_URL}/compras`,{
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}`},
       });
       const data = await res.json();
@@ -22,8 +23,10 @@ export function usePessoas() {
   const addMutation = useMutation({
     mutationFn: async (data:any) => {
       const token = localStorage.getItem('accessToken');
+      data.id_pessoa = parseInt(data.id_pessoa)
 
-      const res = await fetch(`${API_URL}/pessoa`, {
+      console.log(data)
+      const res = await fetch(`${API_URL}/compra`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}`},
         body: JSON.stringify(data)
@@ -34,25 +37,36 @@ export function usePessoas() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pessoas"] });
+      queryClient.invalidateQueries({ queryKey: ["compras"] });
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      const res = await fetch(`${API_URL}/pessoa/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Erro ao remover");
+      const res = await fetch(`${API_URL}/compra/${id}`, { method: "DELETE" });
+
+      if (!res.ok) {
+      // Lê o JSON da resposta de erro para obter o "detail"
+        const errorData: ErrorResponse = await res.json();
+        
+        // Lança um novo erro com a mensagem vinda do backend
+        throw new Error(errorData.detail || "Ocorreu um erro ao remover a compra.");
+      }
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pessoas"] });
+      queryClient.invalidateQueries({ queryKey: ["compras"] });
     },
+    onError: (error: Error) => {
+    // 'error.message' agora contém a mensagem de "detail" do seu backend!
+      alert(`Falha na remoção:, Não foi possível remover, a compra possuí vinculo com outro registro.`); // Exibe o erro para o usuário
+  },
   });
 
   return {
     ...query,
-    addPessoa: addMutation.mutateAsync,
-    removePessoa: deleteMutation.mutateAsync,
+    addCompra: addMutation.mutateAsync,
+    removeCompra: deleteMutation.mutateAsync,
     isSaving: addMutation.isPending,
     isDeleting: deleteMutation.isPending,
   };
@@ -80,6 +94,8 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}): Pro
     ...options,
     headers,
   });
+
+  console.log(response)
 
   // Se a resposta for 401 (Não Autorizado), o token pode ser inválido/expirado
   if (response.status === 401) {

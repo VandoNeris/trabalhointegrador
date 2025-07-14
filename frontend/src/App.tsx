@@ -15,6 +15,7 @@ import EmpresaPage from "./pages/EmpresaPage";
 import LoginPage from "./pages/LoginPage";
 import CadastroPage from "./pages/CadastroPage";
 import DashboardsPage from "./pages/DashboardsPage";
+import CompraPage from "./pages/CompraPage";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,14 @@ const App = () => (
             path="/cadastro"
             element={
                 <CadastroPage />
+            }
+          />
+          <Route
+            path="/compra"
+            element={
+              <AppLayout>
+                <CompraPage />
+              </AppLayout>
             }
           />
           <Route
