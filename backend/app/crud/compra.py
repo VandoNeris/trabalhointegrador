@@ -111,13 +111,11 @@ async def remover_compra(session: AsyncSession, id_compra: int) -> Optional[int]
     Remove uma compra e seus vínculos da tabela `consumocompra`.
     """
     try:
-        # PASSO 1: Deletar o vínculo na tabela 'consumocompra' primeiro
         await session.execute(
             text("DELETE FROM consumocompra WHERE id_compra = :id_compra"),
             {"id_compra": id_compra}
         )
 
-        # PASSO 2: Agora deletar a compra principal
         query = "DELETE FROM compra WHERE id_compra = :id_compra RETURNING id_compra"
         result = await session.execute(text(query), {"id_compra": id_compra})
         
